@@ -6,34 +6,36 @@ const saltRounds = 12
 
 router.get('/:id', function(req, res) {
     Users.getUser(req.params.id)
-         .then(dados => res.jsonp(dados))
-         .catch(erro => res.status(500).jsonp(erro))
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
 });
 
 router.get('/', function(req, res) {
     Users.list()
-         .then(dados => res.jsonp(dados))
-         .catch(erro => res.status(500).jsonp(erro))
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
 });
 
 router.post('/', function(req, res) {
     bcrypt.hash(req.body.password,saltRounds)
         .then( hash => {
-            return Users.createUser(req.body.name,req.body.email,hash)
-                    .then(dados => res.jsonp(dados))
-                    .catch(erro2 => res.status(500).jsonp(erro2))
+            var user = {name: req.body.name, email: req.body.email, password: hash}
+            return Users.createUser(user)
+                .then(data => res.jsonp(data))
+                .catch(error2 => res.status(500).jsonp(error2))
         })
-        .catch(erro => res.status(500).jsonp(erro))
+        .catch(error => res.status(500).jsonp(error))
 });
 
 router.put('/:id', function(req, res) {
     bcrypt.hash(req.body.password,saltRounds)
         .then( hash => {
-            return Users.updateUser(req.params.id,req.body.name,req.body.email,hash)
-                    .then(dados => res.jsonp(dados))
-                    .catch(erro2 => res.status(500).jsonp(erro2))
+            var user = {name: req.body.name, email: req.body.email, password: hash}
+            return Users.updateUser(req.params.id,user)
+                .then(data => res.jsonp(data))
+                .catch(error2 => res.status(500).jsonp(error2))
         })
-        .catch(erro => res.status(500).jsonp(erro))
+        .catch(error => res.status(500).jsonp(error))
 });
 
 module.exports = router;

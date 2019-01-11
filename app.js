@@ -2,9 +2,14 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
+var indexRouter = require('./routes/index');
 var usersAPIRouter = require('./routes/api/user');
+var eventsAPIRouter = require('./routes/api/event');
+var articlesAPIRouter = require('./routes/api/article');
+var articlesRouter = require('./routes/articles')
+var eventsRouter = require('./routes/events')
 
 var app = express();
 
@@ -27,6 +32,11 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/user', usersAPIRouter);
+app.use('/api/event', eventsAPIRouter);
+app.use('/api/article', articlesAPIRouter);
+app.use('/articles',articlesRouter);
+app.use('/events', eventsRouter);
+app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

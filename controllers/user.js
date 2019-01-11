@@ -1,5 +1,4 @@
 var User = require("../models/user")
-var mongo = require("mongodb")
 
 const Users = module.exports
 
@@ -10,21 +9,24 @@ Users.list = () => {
         .exec()
 }
 
-Users.getUser = (idI) => {
-    var idObj = new mongo.ObjectId(idI);
+Users.getUser = id => {
     return User
-        .find({_id: idObj})
+        .findOne({_id: id})
         .exec()
 }
 
-Users.createUser = (nameI, emailI, passwordI) => {
-    return User
-        .insertMany([{name: nameI, email: emailI, password: passwordI}])
+Users.createUser = user => {
+    return User.create(user)
 }
 
-Users.updateUser = (idI, nameI, emailI, passwordI) => {
-    var idObj = new mongo.ObjectId(idI);
+Users.updateUser = (id, user) => {
     return User
-        .updateOne({_id: idObj},{name: nameI, email: emailI, password: passwordI})
+        .findOneAndUpdate({_id: id}, user)
+        .exec()
+}
+
+Users.deleteUser = id => {
+    return User
+        .findOneAndDelete({_id: id})
         .exec()
 }

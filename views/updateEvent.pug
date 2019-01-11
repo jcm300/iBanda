@@ -1,0 +1,29 @@
+extends layout2
+
+block scripts
+    script(src="/javascripts/event.js")
+
+block header
+    h3 Update Event
+
+block body
+    input(id="event_id" type="hidden" name="_id" value=event._id)
+
+    form.w3-container(id="form")
+        input.w3-input(type="text" name="title" placeholder="Title" value=event.title required)
+        input.w3-input(type="text" name="desc" placeholder="Description" value=event.desc)
+        input.w3-input(type="text" name="local" placeholder="Local" value=event.local)
+        label Start Date
+        input.w3-input(type="date" name="startDate" value=event.startDate required)
+        label Start Hour
+        input.w3-input(type="time" name="startHour" value=event.startHour required)
+        label End Date
+        input.w3-input(type="date" name="endDate" value=event.endDate required)
+        label End Hour
+        input.w3-input(type="time" name="endHour" value=event.endHour required)
+        br
+        input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
+    br
+    a(href= url + "events/" + event._id class="w3-button w3-grey") Back to Event
+    br
+    br

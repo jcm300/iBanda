@@ -1,0 +1,27 @@
+extends layout2
+
+block scripts
+    script(src="/javascripts/event.js")
+
+block header
+    h3 New Event
+
+block body
+    form.w3-container(id="form" method="POST" action="/events" onsubmit="return validateForm()")
+        input.w3-input(type="text" name="title" placeholder="Title" required)
+        input.w3-input(type="text" name="desc" placeholder="Description")
+        input.w3-input(type="text" name="local" placeholder="Local")
+        label Start Date
+        input.w3-input(type="date" name="startDate" required)
+        label Start Hour
+        input.w3-input(type="time" name="startHour" required)
+        label End Date
+        input.w3-input(type="date" name="endDate" required)
+        label End Hour
+        input.w3-input(type="time" name="endHour" required)
+        br
+        input.w3-btn.w3-grey(type="submit" value="Create")
+    br
+    a(href= url + "events" class="w3-button w3-grey") Back to Events Menu
+    br
+    br

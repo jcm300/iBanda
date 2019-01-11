@@ -1,0 +1,39 @@
+extends layout2
+
+block scripts
+    script(src="/javascripts/event.js")
+
+block header
+    h2
+        center
+            a(href=url + "events/event/" + event._id class="w3-button w3-white") Edit Event
+            span &emsp;
+            button.w3-button.w3-white(id="delete" value=event._id) Delete Event
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Title
+            td= event.title
+        tr
+            th Description
+            if event.desc 
+                td= event.desc
+            else
+                td ---
+        tr
+            th Local
+            if event.local
+                td= event.local
+            else
+                td ---
+        tr
+            th Start  
+            td #{event.startDate} - #{event.startHour}
+        tr
+            th End  
+            td #{event.endDate} - #{event.endHour}
+    br
+    center
+        a(href= url + "events" class="w3-button w3-grey") Back to Events Menu
+    br
