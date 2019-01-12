@@ -1,7 +1,7 @@
 var url = "http://localhost:3000/"
 
-function validateForm(){
-    var form = document.forms["form"]
+function validateForm(formI){
+    var form = document.forms[formI]
     if(form.checkValidity()){
         if(form["startDate"].value > form["endDate"].value){
             alert("End Date before Start Date!")
@@ -19,9 +19,9 @@ function validateForm(){
 
 $(()=> {
     $("#upButton").click(e => {
-        if(validateForm()){
+        if(validateForm("formUpdate")){
             e.preventDefault()
-            var contentRaw = $("#form").serializeArray()
+            var contentRaw = $("#formUpdate").serializeArray()
             var content = {} 
             $.map(contentRaw, function(n, i){
                 content[n['name']] = n['value'];

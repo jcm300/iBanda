@@ -1,4 +1,4 @@
-extends layout2
+extends ../layout2
 
 block scripts
     script(src="/javascripts/event.js")
@@ -9,9 +9,10 @@ block header
 block body
     input(id="event_id" type="hidden" name="_id" value=event._id)
 
-    form.w3-container(id="form")
+    form.w3-container(id="formUpdate")
         input.w3-input(type="text" name="title" placeholder="Title" value=event.title required)
-        input.w3-input(type="text" name="desc" placeholder="Description" value=event.desc)
+        label Description
+        textarea(style="width:100%" name="desc" rows="3") #{event.desc}
         input.w3-input(type="text" name="local" placeholder="Local" value=event.local)
         label Start Date
         input.w3-input(type="date" name="startDate" value=event.startDate required)

@@ -21,7 +21,7 @@ Users.createUser = user => {
 
 Users.updateUser = (id, user) => {
     return User
-        .findOneAndUpdate({_id: id}, user)
+        .findOneAndUpdate({_id: id}, user, {useFindAndModify: false})
         .exec()
 }
 

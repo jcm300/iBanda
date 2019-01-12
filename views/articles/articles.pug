@@ -1,0 +1,22 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/articles.js")
+
+block header
+    h1 News
+
+block body
+    table(style="width:100%")
+        tr
+            td(style="float:left; width:80%")
+                .w3-container
+                    ul.w3-ul.w3-large.w3-hoverable(id="news")
+                        div(id="l")
+            td(style="float:right; width:20%")
+                h3 Choose a day
+                    form.w3-container
+                        input.w3-input-w3-border.w3-grey(id="date" type="date")
+                br
+                h3 Add an Article
+                a(href=url + "articles/article" class="w3-button w3-grey") New Article

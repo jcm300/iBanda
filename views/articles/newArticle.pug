@@ -1,0 +1,33 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/article.js")
+
+block header
+    h3 New Article
+
+block body
+    form.w3-container(id="formNew" method="POST" action="/articles")
+        input.w3-input(type="text" name="title" placeholder="Title" required)
+        input.w3-input(type="text" name="subtitle" placeholder="Subtitle")
+        label Date
+        input.w3-input(id="date" type="date" name="date" required)
+        label Authors
+        <fieldset id="authorsZone">
+            input.w3-btn.w3-grey(id="addAuthor" type="button" value="Add Author")
+            br
+        </fieldset>
+        label Body
+        textarea(style="width:100%" name="body" rows="10" required)
+        br
+        label Topics
+        <fieldset id="topicsZone">
+            input.w3-btn.w3-grey(id="addTopic" type="button" value="Add Topic")
+            br
+        </fieldset>        
+        br
+        input.w3-btn.w3-grey(type="submit" value="Create")
+    br
+    a(href= url + "articles" class="w3-button w3-grey") Back to News Menu
+    br
+    br

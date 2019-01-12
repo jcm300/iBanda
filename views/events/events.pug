@@ -1,0 +1,25 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/events.js")
+
+block header
+    h1.w3-center.w3-jumbo Agenda
+
+block body
+    table.w3-table-all(style="width:100%")
+        tr
+            td.w3-center(style="float:left; width:90%")
+                h2 Choose a day
+                form.w3-container.w3-xlarge
+                    input.w3-input.w3-grey(id="date" type="date" class="w3-btn")
+            td.w3-center(style="float:right; width:10%")
+                    h3 Add an Event
+                    a(href=url + "events/event" class="w3-btn w3-grey") New Event
+
+    br
+    h2.w3-container.w3-center.w3-grey.w3-xxxlarge Events 
+    .w3-container
+        ul.w3-ul.w3-large(id="eventsDay")
+            div(id="l")
+    br

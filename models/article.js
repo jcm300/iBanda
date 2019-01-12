@@ -6,9 +6,9 @@ var ArticleSchema = new Schema(
        title: {type: String, require: true},
        subtitle: {type: String},
        date: {type: String, require: true},
-       authors: [{author: {type: String}}],
+       authors: [String],
        body: {type: String, require: true},
-       topics: [{topic: {type: String}}]
+       topics: [String]
     }
 )
 

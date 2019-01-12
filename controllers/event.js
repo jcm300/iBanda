@@ -21,7 +21,7 @@ Events.createEvent = event => {
 
 Events.updateEvent = (id, event) => {
     return Event
-        .findOneAndUpdate({_id: id}, event)
+        .findOneAndUpdate({_id: id}, event, {useFindAndModify: false})
         .exec()
 }
 
@@ -35,21 +35,25 @@ Events.getEventsByDate = date => {
     return Event
         .find({ $and: [{ startDate: {$lte: date} }, { endDate: {$gte: date} }] })
         .sort({startDate: 1, startHour: 1})
+        .exec()
 }
 
 Events.getEventsByHour = hour => {
     return Event
         .find({ $and: [{ startHour: {$lte: hour} }, { endHour: {$gte: hour} }] })
         .sort({startDate: 1, startHour: 1})
+        .exec()
 }
 
 Events.getEventsByDateHour = (date, hour) => {
     return Event
         .find({ $and: [{ startDate: {$lte: date} }, { endDate: {$gte: date} }, { startHour: {$lte: hour} }, { endHour: {$gte: hour} }] })
         .sort({startDate: 1, startHour: 1})
+        .exec()
 }
 
 Events.getEventsByLocal = localI => {
     return Event
         .find({local: localI})
+        .exec()
 }

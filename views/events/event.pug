@@ -1,4 +1,4 @@
-extends layout2
+extends ../layout2
 
 block scripts
     script(src="/javascripts/event.js")
@@ -18,7 +18,7 @@ block body
         tr
             th Description
             if event.desc 
-                td= event.desc
+                td(style="white-space:pre")= event.desc
             else
                 td ---
         tr

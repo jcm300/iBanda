@@ -5,7 +5,7 @@ const Articles = module.exports
 Articles.list = () => {
     return Article
         .find()
-        .sort({name: -1})
+        .sort({date: -1})
         .exec()
 }
 
@@ -21,7 +21,7 @@ Articles.createArticle = article => {
 
 Articles.updateArticle = (id, article) => {
     return Article
-        .findOneAndUpdate({_id: id}, article)
+        .findOneAndUpdate({_id: id}, article, {useFindAndModify: false})
         .exec()
 }
 
@@ -34,14 +34,17 @@ Articles.deleteArticle = id => {
 Articles.getArticlesByDate = dateI => {
     return Article
         .find({date: dateI})
+        .exec()
 }
 
 Articles.getArticlesByAuthor = authorI => {
     return Article
-        .find({authors: {author: authorI}})
+        .find({authors: authorI})
+        .exec()
 }
 
 Articles.getArticlesByTopic = topicI => {
     return Article
-        .find({topics: {topic: topicI}})
+        .find({topics: topicI})
+        .exec()
 }
