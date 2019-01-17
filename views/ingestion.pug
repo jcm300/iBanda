@@ -1,0 +1,13 @@
+extends layout2
+
+block header
+    h1 Ingestion
+
+block body
+    h3 Ingestion of SIP file
+    form.w3-form(action="/pieces", method="POST" enctype="multipart/form-data")
+        label SIP File (select one ZIP file)
+        input.w3-input(type="file", name="file" accept="application/x-compressed,application/x-zip-compressed,application/zip,multipart/x-zip,.zip")
+        br
+        input.w3-btn.w3-grey(type="submit", value="Send")
+    br

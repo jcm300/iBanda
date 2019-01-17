@@ -3,13 +3,13 @@ var Schema = mongoose.Schema
 
 var EventSchema = new Schema(
     {
-        title: {type: String, require: true},
+        title: {type: String, required: true},
         desc: {type: String},
         local: {type: String},
-        startDate: {type: String, require: true},
-        startHour: {type: String, require: true},
-        endDate: {type: String, require: true},
-        endHour: {type: String, require: true}
+        startDate: {type: String, required: true},
+        startHour: {type: String, required: true},
+        endDate: {type: String, required: true},
+        endHour: {type: String, required: true}
     }
 )
 

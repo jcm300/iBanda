@@ -3,11 +3,11 @@ var Schema = mongoose.Schema
 
 var ArticleSchema = new Schema(
     {
-       title: {type: String, require: true},
+       title: {type: String, required: true},
        subtitle: {type: String},
-       date: {type: String, require: true},
+       date: {type: String, required: true},
        authors: [String],
-       body: {type: String, require: true},
+       body: {type: String, required: true},
        topics: [String]
     }
 )

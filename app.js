@@ -8,10 +8,15 @@ var indexRouter = require('./routes/index');
 var usersAPIRouter = require('./routes/api/user');
 var eventsAPIRouter = require('./routes/api/event');
 var articlesAPIRouter = require('./routes/api/article');
+var piecesAPIRouter = require('./routes/api/piece')
 var articlesRouter = require('./routes/articles')
 var eventsRouter = require('./routes/events')
+var piecesRouter = require('./routes/pieces')
 
 var app = express();
+
+//define global variables
+app.locals.url="http://localhost:3000/"
 
 //Base de dados
 var mongoose = require("mongoose")
@@ -34,8 +39,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/user', usersAPIRouter);
 app.use('/api/event', eventsAPIRouter);
 app.use('/api/article', articlesAPIRouter);
+app.use('/api/piece', piecesAPIRouter)
 app.use('/articles',articlesRouter);
 app.use('/events', eventsRouter);
+app.use('/pieces', piecesRouter)
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
