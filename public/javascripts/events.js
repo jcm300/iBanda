@@ -1,5 +1,3 @@
-var url = "http://localhost:3000/"
-
 $(()=> {
 
     $("#date").change(e => {

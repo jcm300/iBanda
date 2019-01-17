@@ -1,5 +1,3 @@
-var url = "http://localhost:3000/"
-
 function validateForm(formI){
     var form = document.forms[formI]
     if(form.checkValidity()){

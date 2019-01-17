@@ -1,5 +1,3 @@
-var url = "http://localhost:3000/"
-
 $(() => {
 
     //limit date input to atual day

@@ -1,5 +1,3 @@
-var url = "http://localhost:3000/"
-
 function printList(list, tag, index){
     var textN
     for(var i=0; i<list.length-1; i++){
