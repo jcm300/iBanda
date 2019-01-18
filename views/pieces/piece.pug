@@ -1,0 +1,59 @@
+extends ../layout2
+
+block header
+    h2= piece.title
+
+block body
+    h4
+        b Title: 
+        | #{piece.title}
+    h4
+        b Type: 
+        | #{piece.type}
+    h4
+        b Composer: 
+        if piece.composer
+            td= piece.composer
+        else
+            td ---
+    h4
+        b Arrangement: 
+        if piece.arrangement
+            td= piece.arrangement
+        else
+            td ---
+    h4
+        b Instruments:
+    ul.w3-ul.w3-large.w3-hoverable
+        for inst in piece.instruments
+            li
+                p
+                    b Name: 
+                    | #{inst.name}
+                p
+                    p
+                        b Voice: 
+                        if inst.score.voice
+                            td= inst.score.voice
+                        else
+                            td ---
+                    p
+                        b Clave: 
+                        if inst.score.clave
+                            td= inst.score.clave
+                        else
+                            td ---
+                    p
+                        b Tune: 
+                        if inst.score.tune
+                            td= inst.score.tune
+                        else
+                            td ---
+                    p
+                        a(href=url + "scores/" + piece._id + "/" + inst.score.path) See/Download Score
+    br
+    center
+        a(href= url + "pieces/export/" + piece._id class="w3-button w3-grey") Export Piece
+        span 
+        a(href= url + "pieces" class="w3-button w3-grey") Back to Pieces Menu
+    br

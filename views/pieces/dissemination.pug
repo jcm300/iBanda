@@ -1,0 +1,19 @@
+extends ../layout2
+
+block header
+    h1 Pieces
+
+block body
+    br
+    ul.w3-ul.w3-large.w3-hoverable(id="pieces")
+        for p in pieces
+            li
+                p
+                    b Title: 
+                    | #{p.title}
+                p
+                    b Type: 
+                    | #{p.type}
+                p
+                    a(href=url + "pieces/" + p._id) See more details
+    br

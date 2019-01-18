@@ -5,8 +5,58 @@ var formidable = require("formidable")
 var admzip = require("adm-zip")
 var fs = require("fs")
 
+router.get('/ingestion', (req, res) => {
+    res.render('pieces/ingestion')
+})
+
+router.get('/export/:id', (req, res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
+        .then(piece => {
+            //clean json
+            var id = piece.data._id
+            delete piece.data._id
+            delete piece.data.__v
+            piece.data.instruments.forEach( inst => {
+                delete inst._id
+                delete inst.score._id
+            })
+            //write json
+            fs.writeFileSync("public/scores/" + id + "/iBanda-SIP.json", JSON.stringify(piece.data, null, 4))
+            //create zip buffer
+            var zip = new admzip()
+            zip.addLocalFolder("public/scores/" + id)
+            var zipToSend = zip.toBuffer()
+            //send zip
+            res.setHeader("Content-Type", "application/zip")
+            res.set('Content-Disposition', 'attachment; filename=' + id + '.zip')
+            res.set('Content-Length', zipToSend.length)
+            res.write(zipToSend, 'binary')
+            res.end(null,'binary')
+            //delete json
+            fs.unlinkSync("public/scores/" + id + "/iBanda-SIP.json")
+        })
+        .catch(error => {
+            console.log("Error in get piece: " + error)
+            res.render("error", {message: "Get piece", error: error})
+        })
+})
+
+router.get('/:id', (req,res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
+        .then(piece => res.render("pieces/piece", {piece: piece.data}))
+        .catch(error => {
+            console.log("Error in get piece: " + error)
+            res.render("error", {message: "Get piece", error: error})
+        })
+})
+
 router.get('/', (req, res) => {
-    res.render('ingestion')
+    axios.get(req.app.locals.url + "api/piece")
+        .then(pieces => res.render('pieces/dissemination',{pieces: pieces.data}))
+        .catch(error => {
+            console.log("Error in get pieces: " + error)
+            res.render("error", {message: "Get of pieces", error: error})
+        }) 
 })
 
 //ingestion
