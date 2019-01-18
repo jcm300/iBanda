@@ -4,23 +4,28 @@ block scripts
     script(src="/javascripts/article.js")
 
 block header
-    h3 New Article
+    h3 Update Article
 
 block body
-    form.w3-container(id="formNew" method="POST" action="/articles")
-        input.w3-input(type="text" name="title" placeholder="Title" required)
-        input.w3-input(type="text" name="subtitle" placeholder="Subtitle")
+    input(id="article_id" type="hidden" name="_id" value=article._id)
+
+    form.w3-container(id="formUpdate")
+        input.w3-input(type="text" name="title" placeholder="Title" value=article.title required)
+        input.w3-input(type="text" name="subtitle" placeholder="Subtitle" value=article.subtitle)
         label Date
-        input.w3-input(id="date" type="date" name="date" required)
+        input.w3-input(id="date" type="date" name="date" required value=article.date)
         label Authors
         <fieldset id="authorsZone">
             input.w3-btn.w3-grey(id="addAuthor" type="button" value="Add Author")
             span 
             input.w3-btn.w3-grey(id="removeAuthor" type="button" value="Remove Author")
             br
+            for a in article.authors
+               br
+               input(type="text" name="authors" value=a required)
         </fieldset>
         label Body
-        textarea(style="width:100%" name="body" rows="10" required)
+        textarea(style="width:100%" name="body" rows="10" required value) #{article.body}
         br
         label Topics
         <fieldset id="topicsZone">
@@ -28,9 +33,12 @@ block body
             span 
             input.w3-btn.w3-grey(id="removeTopic" type="button" value="Remove Topic")
             br
+            for t in article.topics
+               br
+               input(type="text" name="topics" value=t required)
         </fieldset>        
         br
-        input.w3-btn.w3-grey(type="submit" value="Create")
+        input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
     br
     a(href= url + "articles" class="w3-button w3-grey") Back to News Menu
     br

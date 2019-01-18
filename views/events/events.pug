@@ -4,22 +4,19 @@ block scripts
     script(src="/javascripts/events.js")
 
 block header
-    h1.w3-center.w3-jumbo Agenda
+    h1 Agenda
+    table
+        tr
+            td(style="width:60%")
+                div(class="w3-bar w3-grey w3-large")
+                    a(href=url + "events/event" class="w3-button w3-grey w3-bar-item") New Event
+                    a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+            td
+                form.w3-container.w3-xlarge.w3-grey
+                    label.w3-large Choose a day to filter Events:  
+                    input.w3-input-border(id="date" type="date")
 
 block body
-    table.w3-table-all(style="width:100%")
-        tr
-            td.w3-center(style="float:left; width:90%")
-                h2 Choose a day
-                form.w3-container.w3-xlarge
-                    input.w3-input.w3-grey(id="date" type="date" class="w3-btn")
-            td.w3-center(style="float:right; width:10%")
-                    h3 Add an Event
-                    a(href=url + "events/event" class="w3-btn w3-grey") New Event
-
-    br
-    h2.w3-container.w3-center.w3-grey.w3-xxxlarge Events 
-    .w3-container
-        ul.w3-ul.w3-large(id="eventsDay")
-            div(id="l")
+    ul.w3-ul.w3-large(id="eventsDay")
+        div(id="l")
     br
