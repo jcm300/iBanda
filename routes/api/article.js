@@ -38,6 +38,12 @@ router.post('/', function(req, res) {
     .catch(error => res.status(500).jsonp(error))
 });
 
+router.put('/visible/:id', function(req,res) {
+    Articles.changeVisibility(req.params.id,req.body.visible)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+})
+
 router.put('/:id', function(req, res) {
     Articles.updateArticle(req.params.id,req.body)
         .then(data => res.jsonp(data))

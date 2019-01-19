@@ -1,0 +1,32 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/piece.js")
+
+block header
+    h3 Update Piece
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "pieces/" + piece._id class="w3-button w3-grey w3-bar-item") Back to Piece
+        a(href= url + "pieces" class="w3-button w3-grey w3-bar-item") Back to Pieces Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    input(id="piece_id" type="hidden" name="_id" value=piece._id)
+
+    form.w3-container(id="formUpdate")
+        input.w3-input(type="text" name="title" placeholder="Title" value=piece.title required)
+        input.w3-input(type="text" name="type" placeholder="Type" value=piece.type required) 
+        input.w3-input(type="text" name="composer" placeholder="Composer" value=piece.composer)
+        input.w3-input(type="text" name="arrangement" placeholder="Arrangement" value=piece.arrangement)
+        label Instruments:
+        for inst in piece.instruments
+            input(type="hidden" name="_id" value=inst._id)
+            input.w3-input(type="text" name="name" placeholder="Name" value=inst.name required)
+            input(type="hidden" name="score._id" value=inst.score._id)
+            input.w3-input(type="text" name="score.voice" placeholder="Voice" value=inst.score.voice)
+            input.w3-input(type="text" name="score.clave" placeholder="Clave" value=inst.score.clave)
+            input.w3-input(type="text" name="score.tune" placeholder="Tune" value=inst.score.tune)
+            input.w3-input(type="text" name="score.path" placeholder="Path" value=inst.score.path readonly) 
+        br
+        input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
+    br

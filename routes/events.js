@@ -11,8 +11,46 @@ router.get('/event/:id', (req,res) => {
         }) 
 })
 
+router.get('/list/:date', (req,res) => {
+    axios.get(req.app.locals.url + "api/event/date/" + req.params.date)
+        .then(events => res.render("events/listEvents", {events: events.data}))
+        .catch(error => {
+            console.log("Error while getting events: " + error)
+            res.render("error", {message: "getting events", error: error})
+        })
+})
+
+router.get('/list', (req,res) => {
+    axios.get(req.app.locals.url + "api/event")
+        .then(events => res.render("events/listEvents", {events: events.data}))
+        .catch(error => {
+            console.log("Error while getting events: " + error)
+            res.render("error", {message: "getting events", error: error})
+        })
+})
+
 router.get('/event', (req,res) => {
     res.render("events/newEvent")
+})
+
+router.get('/export', (req,res) => {
+    axios.get(req.app.locals.url + "api/event")
+        .then(events => {
+            //clean json
+            events.data.forEach(e => {
+                delete e._id
+                delete e.__v
+            })
+            //send json
+            res.setHeader("Content-Type", "application/json")
+            res.set('Content-Disposition', 'attachment; filename=agenda.json')
+            res.write(JSON.stringify(events.data, null, 4))
+            res.end()
+        })
+        .catch(error => {
+            console.log("Error while getting events: " + error)
+            res.render("error", {message: "getting events", error: error})
+        })
 })
 
 router.get('/:id', (req,res) => {

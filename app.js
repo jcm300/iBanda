@@ -9,6 +9,7 @@ var usersAPIRouter = require('./routes/api/user');
 var eventsAPIRouter = require('./routes/api/event');
 var articlesAPIRouter = require('./routes/api/article');
 var piecesAPIRouter = require('./routes/api/piece')
+var usersRouter = require('./routes/users')
 var articlesRouter = require('./routes/articles')
 var eventsRouter = require('./routes/events')
 var piecesRouter = require('./routes/pieces')
@@ -40,6 +41,7 @@ app.use('/api/user', usersAPIRouter);
 app.use('/api/event', eventsAPIRouter);
 app.use('/api/article', articlesAPIRouter);
 app.use('/api/piece', piecesAPIRouter)
+app.use('/users',usersRouter)
 app.use('/articles',articlesRouter);
 app.use('/events', eventsRouter);
 app.use('/pieces', piecesRouter)

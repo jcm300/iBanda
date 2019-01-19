@@ -4,6 +4,7 @@ var axios = require("axios")
 var formidable = require("formidable")
 var admzip = require("adm-zip")
 var fs = require("fs")
+var rimraf = require('rimraf')
 
 router.get('/ingestion', (req, res) => {
     res.render('pieces/ingestion')
@@ -39,6 +40,15 @@ router.get('/export/:id', (req, res) => {
             console.log("Error in get piece: " + error)
             res.render("error", {message: "Get piece", error: error})
         })
+})
+
+router.get('/piece/:id', (req,res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
+        .then(piece => res.render("pieces/updatePiece", {piece: piece.data}))
+        .catch(error => {
+            console.log("Error while getting piece: " + error)
+            res.render("error", {message: "getting piece", error: error})
+        }) 
 })
 
 router.get('/:id', (req,res) => {
@@ -117,6 +127,27 @@ router.post('/', (req, res) => {
             }
         }
     })
+})
+
+router.put('/:id', (req, res) => {
+    axios.put(req.app.locals.url + "api/piece/" + req.params.id, req.body)
+        .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.params.id))
+        .catch(error => {
+            console.log("Error in update piece: " + error)
+            res.status(500).jsonp("Error on update of piece" + error)
+        })
+})
+
+router.delete('/:id', (req, res) => {
+    axios.delete(req.app.locals.url + "api/piece/" + req.params.id)
+        .then( p => {
+            rimraf.sync("public/scores/" + p.data._id)
+            res.jsonp(req.app.locals.url + "pieces")
+        })
+        .catch(error => {
+            console.log("Error in delete piece: " + error)
+            res.status(500).jsonp("Error on delete piece" + error)
+        })
 })
 
 module.exports = router

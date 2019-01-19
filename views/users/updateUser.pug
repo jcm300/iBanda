@@ -1,0 +1,40 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/user.js")
+
+block header
+    h3 Update User
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "users/" + user._id class="w3-button w3-grey w3-bar-item") Back to User
+        a(href= url + "users" class="w3-button w3-grey w3-bar-item") Back to Users Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    form.w3-container(id="formUpdate")
+        input(id="user_id" type="hidden" name="_id" value=user._id)
+        input.w3-input(type="text" name="name" placeholder="Name" value=user.name required)
+        input.w3-input(type="email" name="email" placeholder="Email" value=user.email required)
+        input.w3-input(type="password" name="password" placeholder="Password" pattern=".{8,}" title="Must contain minimum 8 characters" required)
+        label Type:
+        br
+        if user.type=="1"
+            input(type="radio" name="type" value="1" checked)
+        else
+            input(type="radio" name="type" value="1")
+        |  Admin
+        br
+        if user.type=="2"
+            input(type="radio" name="type" value="2" checked)
+        else
+            input(type="radio" name="type" value="2")
+        |  Producer
+        br
+        if user.type=="3"
+            input(type="radio" name="type" value="3" checked)
+        else
+            input(type="radio" name="type" value="3")
+        |  Consumer
+        br
+        input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
+    br

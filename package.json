@@ -16,6 +16,7 @@
     "http-errors": "~1.6.2",
     "mongoose": "^5.3.13",
     "morgan": "~1.9.0",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "rimraf": "^2.6.3"
   }
 }

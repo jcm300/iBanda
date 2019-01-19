@@ -1,7 +1,16 @@
 extends ../layout2
 
+block scripts
+    script(src="/javascripts/piece.js")
+
 block header
     h2= piece.title
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "pieces/export/" + piece._id class="w3-button w3-grey w3-bar-item") Export Piece
+        a(href= url + "pieces/piece/" + piece._id class="w3-button w3-bar-item") Edit Piece
+        button.w3-button.w3-bar-item(id="delete" value=piece._id) Delete Piece
+        a(href= url + "pieces" class="w3-button w3-grey w3-bar-item") Back to Pieces Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
     h4
@@ -51,9 +60,4 @@ block body
                             td ---
                     p
                         a(href=url + "scores/" + piece._id + "/" + inst.score.path) See/Download Score
-    br
-    center
-        a(href= url + "pieces/export/" + piece._id class="w3-button w3-grey") Export Piece
-        span 
-        a(href= url + "pieces" class="w3-button w3-grey") Back to Pieces Menu
     br

@@ -1,0 +1,32 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/user.js")
+
+block header
+    h1= user.name
+    div(class="w3-bar w3-grey w3-large")
+        a(href=url + "users/user/" + user._id class="w3-button w3-bar-item") Edit User
+        button.w3-button.w3-bar-item(id="delete" value=user._id) Delete User
+        a(href= url + "users" class="w3-button w3-grey w3-bar-item") Back to Users Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Name
+            td= user.name
+        tr
+            th Email
+            td= user.email
+        tr
+            th Password
+            td ********
+        tr
+            th Type
+            if user.type=="1"
+                td Admin
+            if user.type=="2"
+                td Producer
+            if user.type=="3"
+                td Consumer

@@ -2,18 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Events = require("../../controllers/event")
 
-router.get('/:id', function(req, res) {
-    Events.getEvent(req.params.id)
-        .then(data => res.jsonp(data))
-        .catch(error => res.status(500).jsonp(error))
-});
-
-router.get('/', function(req, res) {
-    Events.list()
-        .then(data => res.jsonp(data))
-        .catch(error => res.status(500).jsonp(error))
-});
-
 router.get('/date/:date', function(req, res) {
     Events.getEventsByDate(req.params.date)
         .then(data => res.jsonp(data))
@@ -34,6 +22,18 @@ router.get('/date_hour?date=:date&hour=:hour', function(req, res) {
 
 router.get('/local/:local', function(req, res) {
     Events.getEventsByLocal(req.params.local)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+});
+
+router.get('/:id', function(req, res) {
+    Events.getEvent(req.params.id)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+});
+
+router.get('/', function(req, res) {
+    Events.list()
         .then(data => res.jsonp(data))
         .catch(error => res.status(500).jsonp(error))
 });

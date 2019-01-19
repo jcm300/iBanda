@@ -56,7 +56,6 @@ $(() => {
             if(n['name']=="authors" || n['name']=="topics") content[n['name']].push(n['value'])
             else content[n['name']] = n['value'];
         })
-        console.log(content)
         $.ajax({
             type: "PUT",
             contentType: "application/json",

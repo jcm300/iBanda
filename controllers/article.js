@@ -9,6 +9,13 @@ Articles.list = () => {
         .exec()
 }
 
+Articles.listVisibles = () => {
+    return Article
+        .find({visible: true})
+        .sort({date: -1})
+        .exec()
+}
+
 Articles.getArticle = id => {
     return Article
         .findOne({_id: id})
@@ -22,6 +29,12 @@ Articles.createArticle = article => {
 Articles.updateArticle = (id, article) => {
     return Article
         .findOneAndUpdate({_id: id}, article, {useFindAndModify: false})
+        .exec()
+}
+
+Articles.changeVisibility = (id, visibleI) => {
+    return Article
+        .findByIdAndUpdate({_id: id}, {$set: {visible: visibleI}}, {useFindAndModify: false})
         .exec()
 }
 

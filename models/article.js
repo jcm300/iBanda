@@ -8,7 +8,8 @@ var ArticleSchema = new Schema(
        date: {type: String, required: true},
        authors: [String],
        body: {type: String, required: true},
-       topics: [String]
+       topics: [String],
+       visible: {type: Boolean, required: true}
     }
 )
 

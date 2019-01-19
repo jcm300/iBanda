@@ -5,11 +5,14 @@ block scripts
 
 block header
     h3 Update Article
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "articles/" + article._id class="w3-button w3-grey w3-bar-item") Back to Article
+        a(href= url + "articles" class="w3-button w3-grey w3-bar-item") Back to News Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
-    input(id="article_id" type="hidden" name="_id" value=article._id)
-
     form.w3-container(id="formUpdate")
+        input(id="article_id" type="hidden" name="_id" value=article._id)
         input.w3-input(type="text" name="title" placeholder="Title" value=article.title required)
         input.w3-input(type="text" name="subtitle" placeholder="Subtitle" value=article.subtitle)
         label Date
@@ -38,8 +41,9 @@ block body
                input(type="text" name="topics" value=t required)
         </fieldset>        
         br
+        if article.visible
+            input(type="hidden" name="visible" value="true")
+        else
+            input(type="hidden" name="visible" value="false")
         input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
-    br
-    a(href= url + "articles" class="w3-button w3-grey") Back to News Menu
-    br
     br

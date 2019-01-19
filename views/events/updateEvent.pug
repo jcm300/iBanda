@@ -5,11 +5,14 @@ block scripts
 
 block header
     h3 Update Event
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "events/" + event._id class="w3-button w3-grey w3-bar-item") Back to Event
+        a(href= url + "events" class="w3-button w3-grey w3-bar-item") Back to Events Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
-    input(id="event_id" type="hidden" name="_id" value=event._id)
-
     form.w3-container(id="formUpdate")
+        input(id="event_id" type="hidden" name="_id" value=event._id)
         input.w3-input(type="text" name="title" placeholder="Title" value=event.title required)
         label Description
         textarea(style="width:100%" name="desc" rows="3") #{event.desc}
@@ -24,7 +27,4 @@ block body
         input.w3-input(type="time" name="endHour" value=event.endHour required)
         br
         input.w3-btn.w3-grey(id="upButton" type="submit" value="Update")
-    br
-    a(href= url + "events/" + event._id class="w3-button w3-grey") Back to Event
-    br
     br

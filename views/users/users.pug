@@ -1,0 +1,26 @@
+extends ../layout2
+
+block header
+    h1 Users
+    div(class="w3-bar w3-grey w3-large")
+        a(href=url + "users/user" class="w3-button w3-grey w3-bar-item") New User
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr.w3-grey.w3-large
+            th Name
+            th Email
+            th Type
+        for u in users
+            tr
+                td
+                    a(href=url + "users/" + u._id) #{u.name}
+                td= u.email
+                if u.type=="1"
+                    td Admin
+                if u.type=="2"
+                    td Producer
+                if u.type=="3"
+                    td Consumer
+    br

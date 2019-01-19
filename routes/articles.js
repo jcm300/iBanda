@@ -4,7 +4,7 @@ var axios = require("axios")
 
 router.get('/authors/:author', (req,res) => {
     axios.get(req.app.locals.url + "api/article/author/" + req.params.author)
-        .then(articles => res.render("articles/articlesBy", {articles: articles.data, tag: "Author", by: req.params.author}))
+        .then(articles => res.render("articles/articlesBy", {userType: "1", articles: articles.data, tag: "Author", by: req.params.author}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
@@ -13,7 +13,7 @@ router.get('/authors/:author', (req,res) => {
 
 router.get('/topics/:topic', (req,res) => {
     axios.get(req.app.locals.url + "api/article/topic/" + req.params.topic)
-        .then(articles => res.render("articles/articlesBy", {articles: articles.data, tag: "Topic", by: req.params.topic}))
+        .then(articles => res.render("articles/articlesBy", {userType: "1", articles: articles.data, tag: "Topic", by: req.params.topic}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
@@ -27,6 +27,24 @@ router.get('/article/:id', (req,res) => {
             console.log("Error while getting article: " + error)
             res.render("error", {message: "getting article", error: error})
         }) 
+})
+
+router.get('/list/:date', (req,res) => {
+    axios.get(req.app.locals.url + "api/article/date/" + req.params.date)
+        .then(articles => res.render("articles/listArticles", {userType: "1", articles: articles.data}))
+        .catch(error => {
+            console.log("Error while getting articles: " + error)
+            res.render("error", {message: "getting articles", error: error})
+        })
+})
+
+router.get('/list', (req,res) => {
+    axios.get(req.app.locals.url + "api/article")
+        .then(articles => res.render("articles/listArticles", {userType: "1", articles: articles.data}))
+        .catch(error => {
+            console.log("Error while getting articles: " + error)
+            res.render("error", {message: "getting articles", error: error})
+        })
 })
 
 router.get('/article', (req,res) => {
@@ -47,21 +65,30 @@ router.get('/', (req,res) => {
 })
 
 router.post('/', (req, res) => {
-   axios.post(req.app.locals.url + "api/article", req.body)
-       .then(() => res.redirect(req.app.locals.url + "articles"))
-       .catch(error => {
-           console.log("Error in insert article: " + error)
-           res.render("error", {message: "Insertion of article", error: error})
-       })
+    axios.post(req.app.locals.url + "api/article", req.body)
+        .then(() => res.redirect(req.app.locals.url + "articles"))
+        .catch(error => {
+            console.log("Error in insert article: " + error)
+            res.render("error", {message: "Insertion of article", error: error})
+        })
+})
+
+router.put('/visible/:id', (req, res) => {
+    axios.put(req.app.locals.url + "api/article/visible/" + req.params.id, req.body)
+        .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
+        .catch(error => {
+            console.log("Error in update visibility of article: " + error)
+            res.status(500).jsonp("Error on update visibility of article" + error)
+        })
 })
 
 router.put('/:id', (req, res) => {
-   axios.put(req.app.locals.url + "api/article/" + req.params.id, req.body)
-       .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
-       .catch(error => {
-           console.log("Error in update article: " + error)
-           res.status(500).jsonp("Error on update of article" + error)
-       })
+    axios.put(req.app.locals.url + "api/article/" + req.params.id, req.body)
+        .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
+        .catch(error => {
+            console.log("Error in update article: " + error)
+            res.status(500).jsonp("Error on update of article" + error)
+        })
 })
 
 module.exports = router

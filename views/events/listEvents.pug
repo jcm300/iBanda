@@ -1,0 +1,25 @@
+for e in events
+    a(class="w3-btn w3-block w3-hover-black" href=url + "events/" + e._id)
+        li
+            p
+                b Title: 
+                | #{e.title}
+            p(style="white-space:pre")
+                b Description: 
+                br
+                if e.desc
+                    | #{e.desc}
+                else
+                    | ---
+            p
+                b Local: 
+                if e.local
+                    | #{e.local}
+                else
+                    | ---
+            p
+                b Begin: 
+                | #{e.startDate} <b>H:</b> #{e.startHour}
+            p
+                b End: 
+                | #{e.endDate} <b>H:</b> #{e.endHour}
