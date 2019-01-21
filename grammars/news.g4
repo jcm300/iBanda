@@ -1,0 +1,4 @@
+grammar news;
+
+news: 'NEWS'
+    ;

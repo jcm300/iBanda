@@ -1,0 +1,4 @@
+grammar agenda;
+
+agenda: 'AGENDA'
+      ;

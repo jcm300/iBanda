@@ -1,0 +1,14 @@
+extends ../layout2
+
+block header
+    h3 Insert Events By Grammar
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "events" class="w3-button w3-grey w3-bar-item") Back to Agenda Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    form.w3-container(method="POST" action="/events/grammar")
+        label Grammar:
+        textarea(style="width:100%" name="grammar" rows="10" required)
+        input.w3-btn.w3-grey(type="submit" value="Send")
+    br

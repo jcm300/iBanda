@@ -2,6 +2,10 @@ var express = require('express')
 var router = express.Router()
 var axios = require("axios")
 var auth = require("../auth/auth")
+var antlr4 = require('antlr4/index')
+var NewsLexer = require('../grammars/news/newsLexer').newsLexer
+var NewsParser = require('../grammars/news/newsParser').newsParser
+var NewsListener = require('../grammars/news/newsListener').newsListener
 
 router.get('/authors/:author', auth.isAuthenticated, (req,res) => {
     axios.get(req.app.locals.url + "api/article/author/" + req.params.author, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
@@ -48,6 +52,10 @@ router.get('/list', auth.isAuthenticated, (req,res) => {
         })
 })
 
+router.get('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
+    res.render("articles/grammar")
+})
+
 router.get('/article', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     res.render("articles/newArticle")
 })
@@ -63,6 +71,20 @@ router.get('/:id', auth.isAuthenticated, (req,res) => {
 
 router.get('/', auth.isAuthenticated, (req,res) => {
     res.render("articles/articles", {userType: req.session.type})
+})
+
+router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    var chars = new antlr4.InputStream(req.body.grammar);
+    var lexer = new NewsLexer(chars);
+    var tokens  = new antlr4.CommonTokenStream(lexer);
+    var parser = new NewsParser(tokens);
+    
+    parser.buildParseTrees = true;   
+    //call first rule
+    var tree = parser.news();
+    var newsListener = new NewsListener(res); //ou uma variavel??
+    antlr4.tree.ParseTreeWalker.DEFAULT.walk(newsListener, tree);
+    //TODO
 })
 
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
