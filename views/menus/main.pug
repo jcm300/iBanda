@@ -9,26 +9,30 @@ block header
             a(href=url + "articles" class="w3-bar-item w3-button") News Management
             a(href=url + "events" class="w3-bar-item w3-button") Agenda Management
             a(href="" class="w3-bar-item w3-button") Statistics
-            a(href="" class="w3-bar-item w3-button") Logout
+            a(href=url + "logout" class="w3-bar-item w3-button") Logout
     else
         if userType=="2"
             h1 Producer Area
             div(class="w3-bar w3-grey w3-large")
-                a(href="" class="w3-bar-item w3-button") Pieces
-                a(href="" class="w3-bar-item w3-button") SIP Ingestion
-                a(href="" class="w3-bar-item w3-button") News
-                a(href="" class="w3-bar-item w3-button") Agenda
-                a(href="" class="w3-bar-item w3-button") Logout
+                a(href=url + "pieces" class="w3-bar-item w3-button") Pieces
+                a(href=url + "pieces/ingestion" class="w3-bar-item w3-button") SIP Ingestion
+                a(href=url + "articles" class="w3-bar-item w3-button") News
+                a(href=url + "events" class="w3-bar-item w3-button") Agenda
+                a(href=url + "logout" class="w3-bar-item w3-button") Logout
         else 
             if userType=="3"
                     h1 Consumer Area
                     div(class="w3-bar w3-grey w3-large")
-                        a(href="" class="w3-bar-item w3-button") Pieces
-                        a(href="" class="w3-bar-item w3-button") News
-                        a(href="" class="w3-bar-item w3-button") Agenda
-                        a(href="" class="w3-bar-item w3-button") Logout
+                        a(href=url + "pieces" class="w3-bar-item w3-button") Pieces
+                        a(href=url + "articles" class="w3-bar-item w3-button") News
+                        a(href=url + "events" class="w3-bar-item w3-button") Agenda
+                        a(href=url + "logout" class="w3-bar-item w3-button") Logout
 
 block body
+    if error!=""
+        center
+            div(class="w3-panel w3-red")
+                h3= error
     h2 News
     ul.w3-ul.w3-large.w3-hoverable
         for a in articles

@@ -7,8 +7,9 @@ block header
     h2= piece.title
     div(class="w3-bar w3-grey w3-large")
         a(href= url + "pieces/export/" + piece._id class="w3-button w3-grey w3-bar-item") Export Piece
-        a(href= url + "pieces/piece/" + piece._id class="w3-button w3-bar-item") Edit Piece
-        button.w3-button.w3-bar-item(id="delete" value=piece._id) Delete Piece
+        if userType=="1"
+            a(href= url + "pieces/piece/" + piece._id class="w3-button w3-bar-item") Edit Piece
+            button.w3-button.w3-bar-item(id="delete" value=piece._id) Delete Piece
         a(href= url + "pieces" class="w3-button w3-grey w3-bar-item") Back to Pieces Menu
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 

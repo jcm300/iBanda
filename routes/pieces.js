@@ -5,13 +5,14 @@ var formidable = require("formidable")
 var admzip = require("adm-zip")
 var fs = require("fs")
 var rimraf = require('rimraf')
+var auth = require("../auth/auth")
 
-router.get('/ingestion', (req, res) => {
+router.get('/ingestion', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) => {
     res.render('pieces/ingestion')
 })
 
-router.get('/export/:id', (req, res) => {
-    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
+router.get('/export/:id', auth.isAuthenticated, (req, res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(piece => {
             //clean json
             var id = piece.data._id
@@ -42,8 +43,8 @@ router.get('/export/:id', (req, res) => {
         })
 })
 
-router.get('/piece/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
+router.get('/piece/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(piece => res.render("pieces/updatePiece", {piece: piece.data}))
         .catch(error => {
             console.log("Error while getting piece: " + error)
@@ -51,18 +52,18 @@ router.get('/piece/:id', (req,res) => {
         }) 
 })
 
-router.get('/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/piece/" + req.params.id)
-        .then(piece => res.render("pieces/piece", {piece: piece.data}))
+router.get('/:id', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(piece => res.render("pieces/piece", {userType: req.session.type, piece: piece.data}))
         .catch(error => {
             console.log("Error in get piece: " + error)
             res.render("error", {message: "Get piece", error: error})
         })
 })
 
-router.get('/', (req, res) => {
-    axios.get(req.app.locals.url + "api/piece")
-        .then(pieces => res.render('pieces/dissemination',{pieces: pieces.data}))
+router.get('/', auth.isAuthenticated, (req, res) => {
+    axios.get(req.app.locals.url + "api/piece", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(pieces => res.render('pieces/dissemination',{userType: req.session.type, pieces: pieces.data}))
         .catch(error => {
             console.log("Error in get pieces: " + error)
             res.render("error", {message: "Get of pieces", error: error})
@@ -70,7 +71,7 @@ router.get('/', (req, res) => {
 })
 
 //ingestion
-router.post('/', (req, res) => {
+router.post('/', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) => {
     var form = new formidable.IncomingForm()
 
     form.parse(req, (error, fields, formData) => {
@@ -98,7 +99,7 @@ router.post('/', (req, res) => {
                             if(!fileExists) allFilesExists = false
                         })
                         if(allFilesExists){
-                            axios.post(req.app.locals.url + "api/piece", json)
+                            axios.post(req.app.locals.url + "api/piece", json, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
                                 .then( p => {
                                     p.data.instruments.forEach( inst => {
                                         zip.extractEntryTo(inst.score.path,"public/scores/" + p.data._id + "/",true)
@@ -129,8 +130,8 @@ router.post('/', (req, res) => {
     })
 })
 
-router.put('/:id', (req, res) => {
-    axios.put(req.app.locals.url + "api/piece/" + req.params.id, req.body)
+router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    axios.put(req.app.locals.url + "api/piece/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.params.id))
         .catch(error => {
             console.log("Error in update piece: " + error)
@@ -138,8 +139,8 @@ router.put('/:id', (req, res) => {
         })
 })
 
-router.delete('/:id', (req, res) => {
-    axios.delete(req.app.locals.url + "api/piece/" + req.params.id)
+router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    axios.delete(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then( p => {
             rimraf.sync("public/scores/" + p.data._id)
             res.jsonp(req.app.locals.url + "pieces")

@@ -1,9 +1,10 @@
 var express = require('express')
 var router = express.Router()
 var axios = require("axios")
+var auth = require("../auth/auth")
 
-router.get('/event/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/event/" + req.params.id)
+router.get('/event/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
+    axios.get(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(event => res.render("events/updateEvent", {event: event.data}))
         .catch(error => {
             console.log("Error while getting event: " + error)
@@ -11,8 +12,8 @@ router.get('/event/:id', (req,res) => {
         }) 
 })
 
-router.get('/list/:date', (req,res) => {
-    axios.get(req.app.locals.url + "api/event/date/" + req.params.date)
+router.get('/list/:date', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/event/date/" + req.params.date, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(events => res.render("events/listEvents", {events: events.data}))
         .catch(error => {
             console.log("Error while getting events: " + error)
@@ -20,8 +21,8 @@ router.get('/list/:date', (req,res) => {
         })
 })
 
-router.get('/list', (req,res) => {
-    axios.get(req.app.locals.url + "api/event")
+router.get('/list', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/event", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(events => res.render("events/listEvents", {events: events.data}))
         .catch(error => {
             console.log("Error while getting events: " + error)
@@ -29,12 +30,12 @@ router.get('/list', (req,res) => {
         })
 })
 
-router.get('/event', (req,res) => {
+router.get('/event', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     res.render("events/newEvent")
 })
 
-router.get('/export', (req,res) => {
-    axios.get(req.app.locals.url + "api/event")
+router.get('/export', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
+    axios.get(req.app.locals.url + "api/event", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(events => {
             //clean json
             events.data.forEach(e => {
@@ -53,21 +54,21 @@ router.get('/export', (req,res) => {
         })
 })
 
-router.get('/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/event/" + req.params.id)
-        .then(event => res.render("events/event", {event: event.data}))
+router.get('/:id', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(event => res.render("events/event", {userType: req.session.type, event: event.data}))
         .catch(error => {
             console.log("Error while showing event: " + error)
             res.render("error", {message: "showing event", error: error})
         })
 })
 
-router.get('/', (req,res) => {
-    res.render("events/events")
+router.get('/', auth.isAuthenticated, (req,res) => {
+    res.render("events/events", {userType: req.session.type})
 })
 
-router.post('/', (req, res) => {
-   axios.post(req.app.locals.url + "api/event", req.body)
+router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+   axios.post(req.app.locals.url + "api/event", req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
        .then(() => res.redirect(req.app.locals.url + "events"))
        .catch(error => {
            console.log("Error in insert event: " + error)
@@ -75,8 +76,8 @@ router.post('/', (req, res) => {
        })
 })
 
-router.put('/:id', (req, res) => {
-   axios.put(req.app.locals.url + "api/event/" + req.params.id, req.body)
+router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+   axios.put(req.app.locals.url + "api/event/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
        .then(() => res.jsonp(req.app.locals.url + "events/" + req.params.id))
        .catch(error => {
            console.log("Error in update event: " + error)
@@ -84,8 +85,8 @@ router.put('/:id', (req, res) => {
        })
 })
 
-router.delete('/:id', (req, res) => {
-   axios.delete(req.app.locals.url + "api/event/" + req.params.id)
+router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+   axios.delete(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
        .then(() => res.jsonp(req.app.locals.url + "events"))
        .catch(error => {
            console.log("Error in delete event: " + error)

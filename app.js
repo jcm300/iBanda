@@ -4,6 +4,15 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+var mongoose = require("mongoose")
+var uuid = require("uuid/v4")
+var passport = require('passport')
+var session = require("express-session")
+var FileStore = require("session-file-store")(session)
+var flash = require('connect-flash')
+
+require('./auth/auth')
+
 var indexRouter = require('./routes/index');
 var usersAPIRouter = require('./routes/api/user');
 var eventsAPIRouter = require('./routes/api/event');
@@ -19,12 +28,24 @@ var app = express();
 //define global variables
 app.locals.url="http://localhost:3000/"
 
-//Base de dados
-var mongoose = require("mongoose")
-
+//Database connection
 mongoose.connect("mongodb://127.0.0.1:27017/iBanda", {useNewUrlParser: true})
         .then(() => console.log("Mongo status " + mongoose.connection.readyState))
-        .catch(() => console.log("Mongo: erro na conexão."))
+        .catch(() => console.log("Mongo: connection error."))
+
+//session configuration
+app.use(session({
+  genid: () => {
+    return uuid()
+  },
+  store: new FileStore(),
+  secret: "^Qn//'8_hY5RxS*{",
+  resave: false,
+  saveUninitialized: true
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,6 +57,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash())
 
 app.use('/api/user', usersAPIRouter);
 app.use('/api/event', eventsAPIRouter);

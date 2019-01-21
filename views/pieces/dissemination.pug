@@ -3,7 +3,8 @@ extends ../layout2
 block header
     h1 Pieces
     div(class="w3-bar w3-grey w3-large")
-        a(href= url + "pieces/ingestion" class="w3-button w3-grey w3-bar-item") SIP Ingestion
+        if userType=="2"
+            a(href= url + "pieces/ingestion" class="w3-button w3-grey w3-bar-item") SIP Ingestion
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body

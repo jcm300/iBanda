@@ -9,7 +9,8 @@ block header
         tr
             td(style="width:60%")
                 div(class="w3-bar w3-grey w3-large")
-                    a(href=url + "articles/article" class="w3-button w3-grey w3-bar-item") New Article
+                    if userType=="1"
+                        a(href=url + "articles/article" class="w3-button w3-grey w3-bar-item") New Article
                     a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
             td
                 form.w3-container.w3-xlarge.w3-grey

@@ -6,8 +6,9 @@ block scripts
 block header
     h1= event.title
     div(class="w3-bar w3-grey w3-large")
-        a(href=url + "events/event/" + event._id class="w3-button w3-bar-item") Edit Event
-        button.w3-button.w3-bar-item(id="delete" value=event._id) Delete Event
+        if userType=="1"
+            a(href=url + "events/event/" + event._id class="w3-button w3-bar-item") Edit Event
+            button.w3-button.w3-bar-item(id="delete" value=event._id) Delete Event
         a(href= url + "events" class="w3-button w3-grey w3-bar-item") Back to Events Menu
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 

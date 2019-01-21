@@ -21,11 +21,12 @@ block header
 
     input(id="article_id" type="hidden" name="_id" value=article._id)    
     div(class="w3-bar w3-grey w3-large")
-        a(href= url + "articles/article/" + article._id class="w3-button w3-grey w3-bar-item") Edit Article
-        if article.visible
-            button(id="invisible" class="w3-button w3-grey w3-bar-item") Make Article Invisible 
-        else
-            button(id="visible" class="w3-button w3-grey w3-bar-item") Make Article Visible
+        if userType=="1"
+            a(href= url + "articles/article/" + article._id class="w3-button w3-grey w3-bar-item") Edit Article
+            if article.visible
+                button(id="invisible" class="w3-button w3-grey w3-bar-item") Make Article Invisible 
+            else
+                button(id="visible" class="w3-button w3-grey w3-bar-item") Make Article Visible
         a(href= url + "articles" class="w3-button w3-grey w3-bar-item") Back to News Menu
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 

@@ -7,19 +7,24 @@ block content
                 center
                     h1 iBanda  
                         img(src="images/logo.png" alt="Logo" height="42")
+            
             .w3-container
+                if error!=""
+                    center
+                        div(class="w3-panel w3-red")
+                            h3= error
                 center
                     h3 Login
-                    form.w3-container
+                    form.w3-container(method="POST" action="/login")
                         label
                             b Email
-                        input.w3-input.w3-border.w3-grey(id="email" type="text")
+                        input.w3-input.w3-border.w3-grey(name="email" type="email")
                         br
                         label
                             b Password
-                        input.w3-input.w3-border.w3-grey(id="password" type="password")
+                        input.w3-input.w3-border.w3-grey(name="password" type="password")
                         br
-                        button.w3-button.w3-grey(id="login") Login
+                        input.w3-button.w3-grey(type="submit" value="Login")
             br
             footer.w3-container.w3-grey
                 address iBanda

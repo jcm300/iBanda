@@ -1,27 +1,28 @@
 var express = require('express')
 var router = express.Router()
 var axios = require("axios")
+var auth = require("../auth/auth")
 
-router.get('/authors/:author', (req,res) => {
-    axios.get(req.app.locals.url + "api/article/author/" + req.params.author)
-        .then(articles => res.render("articles/articlesBy", {userType: "1", articles: articles.data, tag: "Author", by: req.params.author}))
+router.get('/authors/:author', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/article/author/" + req.params.author, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(articles => res.render("articles/articlesBy", {userType: req.session.type, articles: articles.data, tag: "Author", by: req.params.author}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
         }) 
 })
 
-router.get('/topics/:topic', (req,res) => {
-    axios.get(req.app.locals.url + "api/article/topic/" + req.params.topic)
-        .then(articles => res.render("articles/articlesBy", {userType: "1", articles: articles.data, tag: "Topic", by: req.params.topic}))
+router.get('/topics/:topic', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/article/topic/" + req.params.topic, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(articles => res.render("articles/articlesBy", {userType: req.session.type, articles: articles.data, tag: "Topic", by: req.params.topic}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
         }) 
 })
 
-router.get('/article/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/article/" + req.params.id)
+router.get('/article/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
+    axios.get(req.app.locals.url + "api/article/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(article => res.render("articles/updateArticle", {article: article.data}))
         .catch(error => {
             console.log("Error while getting article: " + error)
@@ -29,43 +30,43 @@ router.get('/article/:id', (req,res) => {
         }) 
 })
 
-router.get('/list/:date', (req,res) => {
-    axios.get(req.app.locals.url + "api/article/date/" + req.params.date)
-        .then(articles => res.render("articles/listArticles", {userType: "1", articles: articles.data}))
+router.get('/list/:date', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/article/date/" + req.params.date, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(articles => res.render("articles/listArticles", {userType: req.session.type, articles: articles.data}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
         })
 })
 
-router.get('/list', (req,res) => {
-    axios.get(req.app.locals.url + "api/article")
-        .then(articles => res.render("articles/listArticles", {userType: "1", articles: articles.data}))
+router.get('/list', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/article", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(articles => res.render("articles/listArticles", {userType: req.session.type, articles: articles.data}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
             res.render("error", {message: "getting articles", error: error})
         })
 })
 
-router.get('/article', (req,res) => {
+router.get('/article', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     res.render("articles/newArticle")
 })
 
-router.get('/:id', (req,res) => {
-    axios.get(req.app.locals.url + "api/article/" + req.params.id)
-        .then(article => res.render("articles/article", {article: article.data}))
+router.get('/:id', auth.isAuthenticated, (req,res) => {
+    axios.get(req.app.locals.url + "api/article/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(article => res.render("articles/article", {userType: req.session.type, article: article.data}))
         .catch(error => {
             console.log("Error while getting article: " + error)
             res.render("error", {message: "getting article", error: error})
         }) 
 })
 
-router.get('/', (req,res) => {
-    res.render("articles/articles")
+router.get('/', auth.isAuthenticated, (req,res) => {
+    res.render("articles/articles", {userType: req.session.type})
 })
 
-router.post('/', (req, res) => {
-    axios.post(req.app.locals.url + "api/article", req.body)
+router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    axios.post(req.app.locals.url + "api/article", req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => res.redirect(req.app.locals.url + "articles"))
         .catch(error => {
             console.log("Error in insert article: " + error)
@@ -73,8 +74,8 @@ router.post('/', (req, res) => {
         })
 })
 
-router.put('/visible/:id', (req, res) => {
-    axios.put(req.app.locals.url + "api/article/visible/" + req.params.id, req.body)
+router.put('/visible/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    axios.put(req.app.locals.url + "api/article/visible/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
         .catch(error => {
             console.log("Error in update visibility of article: " + error)
@@ -82,8 +83,8 @@ router.put('/visible/:id', (req, res) => {
         })
 })
 
-router.put('/:id', (req, res) => {
-    axios.put(req.app.locals.url + "api/article/" + req.params.id, req.body)
+router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
+    axios.put(req.app.locals.url + "api/article/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
         .catch(error => {
             console.log("Error in update article: " + error)
