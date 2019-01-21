@@ -24,8 +24,7 @@ router.get('/logout', auth.isAuthenticated, function(req, res){
 });
 
 router.get("/", (req, res) => {
-    console.log(req.session)
-    if(req.session.token==null) res.render("menus/login",{error: req.flash('error')})
+    if(req.session.token==null || req.session.flash.error!=null) res.render("menus/login",{error: req.flash('error')})
     else res.redirect(req.app.locals.url + "main")
 })
 

@@ -1,0 +1,21 @@
+extends ../layout2
+
+block header
+    h1 Support Library
+    div(class="w3-bar w3-grey w3-large")
+        if userType=="1"
+            a(href=url + "entries/entry" class="w3-button w3-grey w3-bar-item") New Entry
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Description
+            th PDF
+        for entry in entries
+            tr
+                td
+                    a(href=url + "entries/" + entry._id) #{entry.desc}
+                td
+                    a(href=url + "pdfs/" + entry._id + ".pdf") See PDF
+    br

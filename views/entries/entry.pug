@@ -1,0 +1,23 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/entry.js")
+
+block header
+    h1= entry.fileName
+    div(class="w3-bar w3-grey w3-large")
+        if userType=="1"
+            a(href=url + "entries/entry/" + entry._id class="w3-button w3-bar-item") Edit Entry
+            button.w3-button.w3-bar-item(id="delete" value=entry._id) Delete Entry
+        a(href= url + "entries" class="w3-button w3-grey w3-bar-item") Back to Support Library Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Description
+            td= entry.desc
+        tr
+            th PDF
+            td
+                a(href=url + "pdfs/" + entry._id + ".pdf") See PDF

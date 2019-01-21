@@ -13,15 +13,17 @@ var flash = require('connect-flash')
 
 require('./auth/auth')
 
-var indexRouter = require('./routes/index');
-var usersAPIRouter = require('./routes/api/user');
-var eventsAPIRouter = require('./routes/api/event');
-var articlesAPIRouter = require('./routes/api/article');
+var indexRouter = require('./routes/index')
+var usersAPIRouter = require('./routes/api/user')
+var eventsAPIRouter = require('./routes/api/event')
+var articlesAPIRouter = require('./routes/api/article')
 var piecesAPIRouter = require('./routes/api/piece')
+var entriesAPIRouter = require('./routes/api/entry')
 var usersRouter = require('./routes/users')
 var articlesRouter = require('./routes/articles')
 var eventsRouter = require('./routes/events')
 var piecesRouter = require('./routes/pieces')
+var entriesRouter = require('./routes/entries')
 
 var app = express();
 
@@ -59,15 +61,17 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash())
 
-app.use('/api/user', usersAPIRouter);
-app.use('/api/event', eventsAPIRouter);
-app.use('/api/article', articlesAPIRouter);
+app.use('/api/user', usersAPIRouter)
+app.use('/api/event', eventsAPIRouter)
+app.use('/api/article', articlesAPIRouter)
 app.use('/api/piece', piecesAPIRouter)
+app.use('/api/entry',entriesAPIRouter)
 app.use('/users',usersRouter)
-app.use('/articles',articlesRouter);
-app.use('/events', eventsRouter);
+app.use('/articles',articlesRouter)
+app.use('/events', eventsRouter)
 app.use('/pieces', piecesRouter)
-app.use('/', indexRouter);
+app.use('/entries',entriesRouter)
+app.use('/', indexRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
