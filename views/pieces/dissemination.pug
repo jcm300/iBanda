@@ -1,5 +1,8 @@
 extends ../layout2
 
+block scripts
+    script(src="/javascripts/pieces.js")
+
 block header
     h1 Pieces
     div(class="w3-bar w3-grey w3-large")
@@ -8,6 +11,7 @@ block header
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
+    input(class="w3-input w3-border w3-padding" type="text" placeholder="Search by title news.." id="input" onkeyup="filter()")
     br
     ul.w3-ul.w3-large.w3-hoverable(id="pieces")
         for p in pieces

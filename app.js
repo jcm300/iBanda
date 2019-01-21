@@ -12,6 +12,7 @@ var FileStore = require("session-file-store")(session)
 var flash = require('connect-flash')
 
 require('./auth/auth')
+var auth = require('./auth/auth')
 
 var indexRouter = require('./routes/index')
 var usersAPIRouter = require('./routes/api/user')
@@ -34,6 +35,11 @@ app.locals.url="http://localhost:3000/"
 mongoose.connect("mongodb://127.0.0.1:27017/iBanda", {useNewUrlParser: true})
         .then(() => console.log("Mongo status " + mongoose.connection.readyState))
         .catch(() => console.log("Mongo: connection error."))
+
+//create user root if not exists
+//arguments: password 
+//WARNING: Change password!!!!
+auth.createAdmin("ibanda")
 
 //session configuration
 app.use(session({

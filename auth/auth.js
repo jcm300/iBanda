@@ -68,3 +68,13 @@ module.exports.havePermissions = function(level) {
         }
     }
 }
+
+//create user root if not exists
+module.exports.createAdmin = async function(password){
+    var admin = await UserController.findOne("root@root")
+    if(admin==null){
+        admin = {name: "root", email: "root@root", password: password, type: "1"}
+        UserController.createUser(admin)
+            .catch(error => console.log("Root user not created " + error))
+    }
+}

@@ -1,5 +1,8 @@
 extends ../layout2
 
+block scripts
+    script(src="/javascripts/entries.js")
+
 block header
     h1 Support Library
     div(class="w3-bar w3-grey w3-large")
@@ -8,7 +11,9 @@ block header
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
-    table.w3-table-all.w3-centered
+    input(class="w3-input w3-border w3-padding" type="text" placeholder="Search by description.." id="input" onkeyup="filter()")
+
+    table.w3-table-all.w3-centered(id="table")
         tr
             th Description
             th PDF
