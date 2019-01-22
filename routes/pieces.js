@@ -36,6 +36,10 @@ router.get('/export/:id', auth.isAuthenticated, (req, res) => {
             res.end(null,'binary')
             //delete json
             fs.unlinkSync("public/scores/" + id + "/iBanda-SIP.json")
+            //update user stats
+            axios.put(req.app.locals.url + "api/user/downloads/" + req.session._id, {idPiece: req.params.id}, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+                .then(() => console.log("User stats updated!"))
+                .catch(error2 => console.log("Error in update stats user: " + error2))
         })
         .catch(error => {
             console.log("Error in get piece: " + error)
@@ -54,7 +58,13 @@ router.get('/piece/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req
 
 router.get('/:id', auth.isAuthenticated, (req,res) => {
     axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(piece => res.render("pieces/piece", {userType: req.session.type, piece: piece.data}))
+        .then(piece => {
+            res.render("pieces/piece", {userType: req.session.type, piece: piece.data})
+            //update user stats
+            axios.put(req.app.locals.url + "api/user/views/" + req.session._id, {idPiece: req.params.id}, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+                .then(() => console.log("User stats updated!"))
+                .catch(error2 => console.log("Error in update stats user: " + error2))
+        })
         .catch(error => {
             console.log("Error in get piece: " + error)
             res.render("error", {message: "Get piece", error: error})
@@ -144,6 +154,10 @@ router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, r
         .then( p => {
             rimraf.sync("public/scores/" + p.data._id)
             res.jsonp(req.app.locals.url + "pieces")
+            //update user stats
+            axios.put(req.app.locals.url + "api/user/deleteStat", {idPiece: req.params.id}, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+                .then(() => console.log("Users stats updated!"))
+                .catch(error2 => console.log("Error in update stats users: " + error2))
         })
         .catch(error => {
             console.log("Error in delete piece: " + error)

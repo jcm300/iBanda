@@ -44,6 +44,7 @@ router.post("/login", async (req, res, next) => {
                 var privateKey = fs.readFileSync("./auth/private.key", "utf8")
                 var token = jwt.sign({user: myuser}, privateKey, {expiresIn: '30m'})
                 req.session.token = token
+                req.session._id = user._id
                 req.session.type = user.type
                 res.redirect(req.app.locals.url + "main")
             })

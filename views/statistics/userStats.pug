@@ -1,0 +1,60 @@
+extends ../layout2
+
+block header
+    h1= user.name
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "statistics" class="w3-button w3-grey w3-bar-item") Back to Statistics Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Name
+            td
+                a(href=url + "users/" + user._id) #{user.name}
+        tr
+            th Email
+            td= user.email
+        tr
+            th Password
+            td ********
+        tr
+            th Type
+            if user.type=="1"
+                td Admin
+            if user.type=="2"
+                td Producer
+            if user.type=="3"
+                td Consumer
+    
+    h3 User Statistics
+    table.w3-table-all.w3-centered
+        tr 
+            th Total views
+            td= totalViews
+        tr
+            th Total downloads
+            td= totalDownloads
+        tr
+            th Piece most viewed
+            td Id: 
+                a(href=url + "pieces/" + mostVPiece.idPiece) #{mostVPiece.idPiece}
+                |, with #{mostVPiece.views} views 
+        tr
+            th Piece most downloaded
+            td Id: 
+                a(href=url + "pieces/" + mostDPiece.idPiece) #{mostDPiece.idPiece}
+                |, with #{mostDPiece.downloads} downloads
+    br
+    table.w3-table-all.w3-centered
+        tr
+            th Piece
+            th Views
+            th Downloads
+        for s in user.stats
+            tr
+                td
+                    a(href=url + "pieces/" + s.idPiece) #{s.idPiece}
+                td= s.views
+                td= s.downloads
+    br

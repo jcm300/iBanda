@@ -21,6 +21,24 @@ router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), function(req
         .catch(error => res.status(500).jsonp(error))
 });
 
+router.put('/views/:id', auth.isAuthenticated, function(req, res) {
+    Users.updateViews(req.params.id,req.body.idPiece)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+})
+
+router.put('/downloads/:id', auth.isAuthenticated, function(req, res) {
+    Users.updateDownloads(req.params.id,req.body.idPiece)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+})
+
+router.put('/deleteStat', auth.isAuthenticated, function(req, res) {
+    Users.deleteStat(req.body.idPiece)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+})
+
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
     Users.updateUser(req.params.id,req.body)
         .then(data => res.jsonp(data))

@@ -73,7 +73,7 @@ module.exports.havePermissions = function(level) {
 module.exports.createAdmin = async function(password){
     var admin = await UserController.findOne("root@root")
     if(admin==null){
-        admin = {name: "root", email: "root@root", password: password, type: "1"}
+        admin = {name: "root", email: "root@root", password: password, type: "1", stats: []}
         UserController.createUser(admin)
             .catch(error => console.log("Root user not created " + error))
     }

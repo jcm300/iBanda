@@ -20,11 +20,13 @@ var eventsAPIRouter = require('./routes/api/event')
 var articlesAPIRouter = require('./routes/api/article')
 var piecesAPIRouter = require('./routes/api/piece')
 var entriesAPIRouter = require('./routes/api/entry')
+var statisticsAPIRouter = require('./routes/api/statistic')
 var usersRouter = require('./routes/users')
 var articlesRouter = require('./routes/articles')
 var eventsRouter = require('./routes/events')
 var piecesRouter = require('./routes/pieces')
 var entriesRouter = require('./routes/entries')
+var statisticsRouter = require('./routes/statistics')
 
 var app = express();
 
@@ -72,11 +74,13 @@ app.use('/api/event', eventsAPIRouter)
 app.use('/api/article', articlesAPIRouter)
 app.use('/api/piece', piecesAPIRouter)
 app.use('/api/entry',entriesAPIRouter)
+app.use('/api/statistic',statisticsAPIRouter)
 app.use('/users',usersRouter)
 app.use('/articles',articlesRouter)
 app.use('/events', eventsRouter)
 app.use('/pieces', piecesRouter)
 app.use('/entries',entriesRouter)
+app.use('/statistics',statisticsRouter)
 app.use('/', indexRouter)
 
 // catch 404 and forward to error handler

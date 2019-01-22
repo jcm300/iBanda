@@ -1,0 +1,62 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/users.js")
+
+block header
+    h1 Statistics
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    table.w3-table-all.w3-centered
+        tr
+            th Total views
+            td= totalViews
+        tr
+            th Total downloads
+            td= totalDownloads
+        tr
+            th User with most views
+            td Id: 
+                a(href=url + "users/" + userMViews._id) #{userMViews._id}
+                |, with #{userMViews.value} views
+        tr
+            th User with most downloads
+            td Id: 
+                a(href=url + "users/" + userMDownloads._id) #{userMDownloads._id}
+                |, with #{userMDownloads.value} downloads
+        tr
+            th Piece with most views
+            td Id: 
+                a(href=url + "pieces/" + pieceMViews._id) #{pieceMViews._id}
+                |, with #{pieceMViews.value} views
+        tr
+            th Piece with most downloads
+            td Id: 
+                a(href=url + "pieces/" + pieceMDownloads._id) #{pieceMDownloads._id}
+                |, with #{pieceMDownloads.value} downloads
+    br 
+    input(class="w3-input w3-border w3-padding" type="text" placeholder="Search by name of users.." id="input" onkeyup="filter()")
+
+    table.w3-table-all.w3-centered(id="table")
+        tr.w3-grey.w3-large
+            th Name
+            th Email
+            th Type
+            th Views
+            th Downloads
+        for u in users
+            tr
+                td
+                    a(href=url + "statistics/" + u._id) #{u.name}
+                td= u.email
+                if u.type=="1"
+                    td Admin
+                if u.type=="2"
+                    td Producer
+                if u.type=="3"
+                    td Consumer
+                td= views[u._id]
+                td= downloads[u._id]
+    br
