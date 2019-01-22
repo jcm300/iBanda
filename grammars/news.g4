@@ -1,21 +1,23 @@
 grammar news;
 
+newspaper: news+
+
 news: 'NEWS' titles topics body date authors
     ;
 
 titles: 'TITLE:' title ('SUBTITLE:' title)?
 	  ;
 
-title: PALAVRA+ 
+title: TEXTO 
 	 ;
 
 topics: 'TOPICS:' topic (',' topic)* '.'
 	  ;
 
-topic: PALAVRA+
+topic: TEXTO
 	 ;
 
-body: 'BODY:' PALAVRA+
+body: 'BODY:' TEXTO
 	;
 
 date: 'DATE:' DATA
@@ -35,10 +37,8 @@ fragment DIGITO: [0-9];
 
 fragment SIMBOLO : [-%$€@&()\[\]:{}=><+*;,ºª~^/\'"];
 
-PONTOTERMINAL: [?.!];
-
 PALAVRA: (LETRA | DIGITO | SIMBOLO)+;
 
-DATA: DIGITO{2}'-'DIGITO{2}'-'DIGITO{4}
+DATA: DIGITO{1,2}'-'DIGITO{1,2}'-'DIGITO{4}
 
 Separador: ( '\r'? '\n' | ' ' | '\t' )+  -> skip; 
