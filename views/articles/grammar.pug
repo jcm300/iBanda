@@ -7,8 +7,13 @@ block header
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
+    if errors!=""
+        center
+            div(class="w3-panel w3-red")
+                for e in errors
+                    h3= e
     form.w3-container(method="POST" action="/articles/grammar")
         label Grammar:
-        textarea(style="width:100%" name="grammar" rows="10" required)
+        textarea(style="width:100%" name="grammar" rows="10" required) #{input}
         input.w3-btn.w3-grey(type="submit" value="Send")
     br

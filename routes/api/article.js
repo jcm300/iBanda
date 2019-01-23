@@ -33,10 +33,16 @@ router.get('/', auth.isAuthenticated, function(req, res) {
         .catch(error => res.status(500).jsonp(error))
 });
 
+router.post('/insertMany', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
+    Articles.insertMany(req.body)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+});
+
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
     Articles.createArticle(req.body)
         .then(data => res.jsonp(data))
-    .catch(error => res.status(500).jsonp(error))
+        .catch(error => res.status(500).jsonp(error))
 });
 
 router.put('/visible/:id', auth.isAuthenticated, auth.havePermissions(["1"]), function(req,res) {

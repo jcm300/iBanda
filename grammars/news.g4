@@ -1,40 +1,110 @@
 grammar news;
 
-newspaper: 'NEWS' news+
+newspaper returns [var val, var errors]
+@init{
+	$val = []
+	$errors = []
+}
+		 :'NEWS:' (news {
+			 if($news.error!="") $errors.push($news.error);
+			 else $val.push($news.val);
+		 } ';')+
 		 ;
 
-news: titles topics body date authors
+news returns [var val, var error]
+@init{
+	function today(){
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth() + 1; //January is 0!
+		var yyyy = today.getFullYear();
+
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+
+		if (mm < 10) {
+			mm = '0' + mm;
+		}
+
+		today = yyyy + '-' + mm + '-' + dd;
+		return today;
+	}
+	var existTopics = false
+	var existAuthors = false
+}
+	: titles (topics {existTopics = true})? body date (authors {existAuthors = true})?
+	{
+		if(today()>=$date.val){
+			$val = {
+				title: $titles.titleOut,
+				subtitle: $titles.subtitle,
+				body: $body.val,
+				date: $date.val
+			}
+			if(existTopics) $val.topics = $topics.val
+			else $val.topics = []
+			if(existAuthors) $val.authors = $authors.val
+			else $val.authors = []
+			$error = ""
+		}else{
+			$val = ""
+			$error = "Date is in the future on " + $titles.titleOut + " article!"
+		}
+	}
     ;
 
-titles: 'TITLE:' title ('SUBTITLE:' title)?
-	  ;
+titles returns [var titleOut, var subtitle]
+@init{
+	var subExists = false
+}
+		: 'TITLE:' t=title ('SUBTITLE:' s=title {subExists = true})?
+		{
+			$titleOut = $t.val
+			if(subExists) $subtitle = $s.val
+			else $subtitle = ""
+		}
+		;
 
-title: TEXTO 
-	 ;
-
-topics: 'TOPICS:' topic (',' topic)* '.'
-	  ;
-
-topic: TEXTO
-	 ;
-
-body: 'BODY:' TEXTO
+title returns [var val]
+	: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
 	;
 
-date: 'DATE:' DATA
+topics returns [var val]
+@init{
+	$val = []
+}
+		: 'TOPICS:' t1=topic {$val.push($t1.val)} (',' t2=topic {$val.push($t2.val)})*
+		;
+
+topic returns [var val]
+		: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+		;
+
+body returns [var val]
+	: 'BODY:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
 	;
 
-authors: 'AUTHORS:' author (',' author)*
+date returns [var val]
+	: 'DATE:' DATE {$val = $DATE.text}
+	;
+
+authors returns [var val]
+@init{
+	$val = []
+}
+		: 'AUTHORS:' a1=author {$val.push($a1.val)} (',' a2=author {$val.push($a2.val)})*
 	   ;
 
-author: TEXTO
-	  ;
+author returns [var val]
+		: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+		;
 
 /* Definição do Analisador Léxico */         
-TEXTO: (('\'') ~('\'')* ('\''));
+TEXT: (['"] ~(['"])* ['"]);
 
-fragment DIGITO: [0-9];
+fragment DIGIT: [0-9];
 
-DATA: DIGITO{4}'-'DIGITO{2}'-'DIGITO{2};
+DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT;
 
-Separador: ( '\r'? '\n' | ' ' | '\t' )+  -> skip; 
+Separator: ( '\r'? '\n' | ' ' | '\t' )+  -> skip; 

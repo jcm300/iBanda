@@ -26,6 +26,10 @@ Articles.createArticle = article => {
     return Article.create(article)
 }
 
+Articles.insertMany = articles => {
+    return Article.insertMany(articles)
+}
+
 Articles.updateArticle = (id, article) => {
     return Article
         .findOneAndUpdate({_id: id}, article, {useFindAndModify: false})

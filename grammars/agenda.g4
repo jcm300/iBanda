@@ -1,6 +1,7 @@
 grammar agenda;
 
-agenda: 'AGENDA' event+
+agenda returns [var val, var errors]
+      : 'AGENDA' event+
       ;
 
 event: title desc local time

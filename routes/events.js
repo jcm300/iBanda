@@ -35,7 +35,7 @@ router.get('/list', auth.isAuthenticated, (req,res) => {
 })
 
 router.get('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
-    res.render("events/grammar")
+    res.render("events/grammar", {input: req.flash("input"), errors: req.flash("grammarError")})
 })
 
 router.get('/event', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
@@ -81,12 +81,35 @@ router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,
     var tokens  = new antlr4.CommonTokenStream(lexer);
     var parser = new AgendaParser(tokens);
     
+    var log = []
+
+    //replace console.error
+    var exLogError = console.error
+    console.error = function(msg) {
+        log.push(msg)
+    }
+
     parser.buildParseTrees = true;   
     //call first rule
-    var tree = parser.agenda();   
-    var agendaListener = new AgendaListener(res); //ou uma variavel??
+    var tree = parser.agenda();
+    var agendaListener = new AgendaListener();
     antlr4.tree.ParseTreeWalker.DEFAULT.walk(agendaListener, tree);
-    //TODO
+    //reset console.error
+    console.error = exLogError
+
+    if(log.length!=0 || tree.errors.length!=0){
+        var errors = log.concat(tree.errors)
+        req.flash("input",req.body.grammar)
+        req.flash("grammarError",errors)
+        res.redirect(req.app.locals.url + "events/grammar")
+    }else{
+        axios.post(req.app.locals.url + "api/event/insertMany", tree.val, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+            .then(() => res.redirect(req.app.locals.url + "events"))
+            .catch(error => {
+                console.log("Error in insert many events: " + error)
+                res.render("error", {message: "Insertion of many events", error: error})
+        })
+    }
 })
 
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {

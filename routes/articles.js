@@ -53,7 +53,7 @@ router.get('/list', auth.isAuthenticated, (req,res) => {
 })
 
 router.get('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
-    res.render("articles/grammar")
+    res.render("articles/grammar", {input: req.flash("input"), errors: req.flash("grammarError")})
 })
 
 router.get('/article', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
@@ -79,12 +79,36 @@ router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,
     var tokens  = new antlr4.CommonTokenStream(lexer);
     var parser = new NewsParser(tokens);
     
+    var log = []
+
+    //replace console.error
+    var exLogError = console.error
+    console.error = function(msg) {
+        log.push(msg)
+    }
+
     parser.buildParseTrees = true;   
     //call first rule
-    var tree = parser.news();
-    var newsListener = new NewsListener(res); //ou uma variavel??
+    var tree = parser.newspaper();
+    var newsListener = new NewsListener();
     antlr4.tree.ParseTreeWalker.DEFAULT.walk(newsListener, tree);
-    //TODO
+    //reset console.error
+    console.error = exLogError
+
+    if(log.length!=0 || tree.errors.length!=0){
+        var errors = log.concat(tree.errors)
+        req.flash("input",req.body.grammar)
+        req.flash("grammarError",errors)
+        res.redirect(req.app.locals.url + "articles/grammar")
+    }else{
+        tree.val.forEach(a => a.visible=true)
+        axios.post(req.app.locals.url + "api/article/insertMany", tree.val, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+            .then(() => res.redirect(req.app.locals.url + "articles"))
+            .catch(error => {
+                console.log("Error in insert many articles: " + error)
+                res.render("error", {message: "Insertion of many articles", error: error})
+        })
+    }
 })
 
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {

@@ -39,6 +39,12 @@ router.get('/', auth.isAuthenticated, function(req, res) {
         .catch(error => res.status(500).jsonp(error))
 });
 
+router.post('/insertMany', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
+    Events.insertMany(req.body)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+});
+
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
     Events.createEvent(req.body)
         .then(data => res.jsonp(data))

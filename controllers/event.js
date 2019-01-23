@@ -19,6 +19,10 @@ Events.createEvent = event => {
     return Event.create(event)
 }
 
+Events.insertMany = events => {
+    return Event.insertMany(events)
+}
+
 Events.updateEvent = (id, event) => {
     return Event
         .findOneAndUpdate({_id: id}, event, {useFindAndModify: false})
