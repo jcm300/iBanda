@@ -15,8 +15,8 @@ router.get('/hour/:hour', auth.isAuthenticated, function(req, res) {
         .catch(error => res.status(500).jsonp(error))
 });
 
-router.get('/date_hour?date=:date&hour=:hour', auth.isAuthenticated, function(req, res) {
-    Events.getEventsByDateHour(req.params.date, req.params.hour)
+router.get('/date_hour', auth.isAuthenticated, function(req, res) {
+    Events.getEventsByDateHour(req.query.date, req.query.hour)
         .then(data => res.jsonp(data))
         .catch(error => res.status(500).jsonp(error))
 });

@@ -100,8 +100,6 @@ router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res)
                     res.status(500).jsonp("File is not a PDF!")
                 }
             }
-            console.log(formData)
-            console.log(fields)
             var entryInfo = {_id: req.params.id, desc: fields.desc}
             axios.put(req.app.locals.url + "api/entry/" + req.params.id, entryInfo, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
                 .then(() => res.jsonp(req.app.locals.url + "entries/" + req.params.id))

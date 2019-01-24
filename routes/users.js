@@ -2,6 +2,20 @@ var express = require('express')
 var router = express.Router()
 var axios = require("axios")
 var auth = require("../auth/auth")
+var fs = require("fs")
+
+function deleteSessions(id,res){
+    var files = fs.readdirSync("sessions")
+    files.forEach( file => {
+        var obj;
+        console.log(file)
+        var data = fs.readFileSync("sessions/" + file)
+        var obj = JSON.parse(data);
+        
+        if(obj._id == id)
+            fs.unlinkSync("sessions/" + file)
+    })
+}
 
 router.get('/user/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/user/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
@@ -45,7 +59,11 @@ router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) =
 
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.put(req.app.locals.url + "api/user/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.jsonp(req.app.locals.url + "users/" + req.params.id))
+        .then(() => {
+            //delete sessions
+            deleteSessions(req.params.id) 
+            res.jsonp(req.app.locals.url + "users/" + req.params.id)
+        })
         .catch(error => {
             console.log("Error in update user: " + error)
             res.status(500).jsonp("Error on update of user" + error)
@@ -54,7 +72,11 @@ router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res)
 
 router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.delete(req.app.locals.url + "api/user/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.jsonp(req.app.locals.url + "users"))
+        .then(() => {
+            //delete sessions
+            deleteSessions(req.params.id,res)
+            res.jsonp(req.app.locals.url + "users")
+        })
         .catch(error => {
             console.log("Error in delete user: " + error)
             res.status(500).jsonp("Error on delete user" + error)

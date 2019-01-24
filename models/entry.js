@@ -3,7 +3,7 @@ var Schema = mongoose.Schema
 
 var EntrySchema = new Schema(
     {
-       desc: {type: String, required: true},
+       desc: {type: String, required: true}
     }
 )
 
