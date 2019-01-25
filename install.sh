@@ -43,7 +43,7 @@ if [ $# -eq 1 ]; then
 
         #start mongoDB
         mongod --dbpath ~/Downloads/mongoDB/ & 
-
+        
         #generate grammars
         cd grammars
         gradle generateAgendaParser
@@ -58,7 +58,7 @@ if [ $# -eq 1 ]; then
 
         #start mongoDB
         mongod --dbpath ~/Downloads/mongoDB/ & 
-
+        sleep 5
         #Start
         npm start
     elif []; then

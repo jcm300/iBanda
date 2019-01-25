@@ -1,0 +1,21 @@
+extends ../layout2
+
+block header
+    h1 Add Instrument
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "pieces/" + idP class="w3-button w3-grey w3-bar-item") Back to Piece
+        a(href= url + "pieces" class="w3-button w3-grey w3-bar-item") Back to Pieces Menu
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    form.w3-container(method="POST" action="/pieces/addInst/" + idP enctype="multipart/form-data")
+        br
+        input.w3-input(type="text" name="name" placeholder="Name" required)
+        input.w3-input(type="text" name="score.voice" placeholder="Voice")
+        input.w3-input(type="text" name="score.clave" placeholder="Clave")
+        input.w3-input(type="text" name="score.tune" placeholder="Tune")
+        label PDF:
+        input.w3-input(type="file", name="file" accept="application/pdf,.pdf" required) 
+        br
+        input.w3-btn.w3-grey(type="submit" value="Create Instrument")
+    br

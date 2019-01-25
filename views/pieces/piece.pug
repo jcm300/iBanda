@@ -9,11 +9,15 @@ block header
         a(href= url + "pieces/export/" + piece._id class="w3-button w3-grey w3-bar-item") Export Piece
         if userType=="1"
             a(href= url + "pieces/piece/" + piece._id class="w3-button w3-bar-item") Edit Piece
-            button.w3-button.w3-bar-item(id="delete" value=piece._id) Delete Piece
+            a(href= url + "pieces/addInst/" + piece._id class="w3-button w3-bar-item") Add Instrument
+            button.w3-button.w3-bar-item(id="delete") Delete Piece
+        if userType=="2"
+            a(href= url + "pieces/addInst/" + piece._id class="w3-button w3-bar-item") Add Instrument
         a(href= url + "pieces" class="w3-button w3-grey w3-bar-item") Back to Pieces Menu
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
+    input(id="piece_id" type="hidden" value=piece._id)
     h4
         b Title: 
         | #{piece.title}
@@ -61,4 +65,9 @@ block body
                             td ---
                     p
                         a(href=url + "scores/" + piece._id + "/" + inst.score.path) See/Download Score
+                if userType == "1" || userType == "2"
+                    p
+                        a(href=url + "pieces/updInst?idP=" + piece._id + "&idI=" + inst._id class="w3-button w3-grey") Update Instrument
+                        span 
+                        button.w3-button.w3-grey(id="deleteInst" value=inst._id) Delete Instrument
     br

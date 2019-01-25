@@ -37,9 +37,24 @@ $(()=> {
         $.ajax({
             type: "DELETE",
             contentType: "application/json",
-            url: url + "pieces/" + $("#delete").val(),
+            url: url + "pieces/" + $("#piece_id").val(),
             success: redirect => window.location.href = redirect,
             error: e => alert(JSON.stringify(e))
         })
+    })
+
+    $('button').click( e => {
+        if(e.currentTarget.id=='deleteInst'){
+            e.preventDefault()
+            console.log(e.currentTarget.id)
+            console.log(e.currentTarget.value)
+            $.ajax({
+                type: "DELETE",
+                contentType: "application/json",
+                url: url + "pieces/remInst?idP=" + $("#piece_id").val() + "&idI=" + e.currentTarget.value,
+                success: redirect => window.location.href = redirect,
+                error: e => alert(JSON.stringify(e))
+            })
+        }
     })
 })

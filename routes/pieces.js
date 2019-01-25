@@ -4,11 +4,32 @@ var axios = require("axios")
 var formidable = require("formidable")
 var admzip = require("adm-zip")
 var fs = require("fs")
+var fsExtra = require("fs.extra")
+var formidable = require("formidable")
+var mongoose = require('mongoose')
 var rimraf = require('rimraf')
 var auth = require("../auth/auth")
 
 router.get('/ingestion', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) => {
     res.render('pieces/ingestion')
+})
+
+router.get('/addInst/:id', auth.isAuthenticated, auth.havePermissions(["1","2"]), (req, res) => {
+    res.render('pieces/addInst.pug', {idP: req.params.id})
+})
+
+router.get('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), (req, res) => {
+    axios.get(req.app.locals.url + "api/piece/" + req.query.idP, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(piece => {
+            piece.data.instruments.forEach(inst => {
+                if(inst._id == req.query.idI)
+                    res.render("pieces/updInst", {idP: req.query.idP, inst: inst})
+            })
+        })
+        .catch(error => {
+            console.log("Error while getting piece: " + error)
+            res.render("error", {message: "getting piece", error: error})
+        })
 })
 
 router.get('/export/:id', auth.isAuthenticated, (req, res) => {
@@ -80,6 +101,49 @@ router.get('/', auth.isAuthenticated, (req, res) => {
         }) 
 })
 
+router.post('/addInst/:id', auth.isAuthenticated, auth.havePermissions(["1","2"]), function(req, res) {
+    var form = new formidable.IncomingForm()
+
+    form.parse(req, (error, fields, formData)=>{
+        if(!error){
+            if(formData.file!=null){
+                if(formData.file.type=="application/pdf"){
+                    var fsend = formData.file.path
+                    var fnew = "public/scores/" + req.params.id + "/" + formData.file.name
+                    var id = new mongoose.Types.ObjectId()
+                    fields['_id'] = id.toHexString()
+                    //if filename already exists put the name will be the id of instrument
+                    if(fs.existsSync(fnew)){
+                        fnew = "public/scores/" + req.params.id + "/" + fields['_id'] + ".pdf"
+                        fields['score.path'] = fields['_id'] + ".pdf"
+                    }else{
+                        fields['score.path'] = formData.file.name
+                    }
+                    fsExtra.move(fsend,fnew, error2 => {
+                        if(error2){
+                            console.log("Error moving file: " + error2)
+                            res.render("error",{message: "Error moving file: ", error: error2})
+                        }else{
+                            axios.post(req.app.locals.url + "api/piece/addInst/" + req.params.id, fields, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+                                .then(() => res.redirect(req.app.locals.url + "pieces/" + req.params.id))
+                                .catch(error => {
+                                    console.log("Error in add instrument: " + error)
+                                    res.render("error",{message: "Error on add instrument", error: error})
+                                })
+                        }
+                    }) 
+                }else{
+                    console.log("File is not a PDF!")
+                    res.render("error",{message:"File is not a PDF!"})
+                }
+            }
+        }else{
+            console.log("Error in add instrument: " + error)
+            res.render("error",{message: "Error on add instrument", error: error})
+        }
+    })
+});
+
 //ingestion
 router.post('/', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) => {
     var form = new formidable.IncomingForm()
@@ -140,12 +204,72 @@ router.post('/', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) =
     })
 })
 
+router.put('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), function(req, res) {
+    var form = new formidable.IncomingForm()
+
+    form.parse(req, (error, fields, formData)=>{
+        if(!error){
+            if(formData.file!=null){
+                if(formData.file.type=="application/pdf"){
+                    var path = "public/scores/" + req.query.idP + "/" + fields['score.path']
+                    //delete old file
+                    fs.unlinkSync(path)
+                    //use the name of file to save
+                    var path = "public/scores/" + req.query.idP + "/" + formData.file.name
+                    fields['score.path'] = formData.file.name
+                    //if filename already exists put the name will be the id of instrument
+                    if(fs.existsSync(path)) {
+                        path = "public/scores/" + req.query.idP + "/" + req.query.idI + ".pdf"
+                        fields['score.path'] = req.query.idI + ".pdf" 
+                    }
+                    fsExtra.move(formData.file.path, path, error2 => {
+                        if(error2){
+                            console.log("Error moving file: " + error2)
+                            res.status(500).jsonp("Error moving file: " + error2)
+                        }else{
+                            //update BD
+                            axios.put(req.app.locals.url + "api/piece/updInst?idP=" + req.query.idP + "&idI=" + req.query.idI, fields, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+                                .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.query.idP))
+                                .catch(error => {
+                                    console.log("Error in update instrument: " + error)
+                                    res.status(500).jsonp("Error on update instrument" + error)
+                                })
+                        }
+                    }) 
+                }else{
+                    console.log("File is not a PDF!")
+                    res.status(500).jsonp("File is not a PDF!")
+                }
+            }
+        }else{
+            console.log("Error in update instrument: " + error)
+            res.status(500).jsonp("Error on update instrument" + error)
+        }
+    })
+});
+
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.put(req.app.locals.url + "api/piece/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.params.id))
         .catch(error => {
             console.log("Error in update piece: " + error)
             res.status(500).jsonp("Error on update of piece" + error)
+        })
+})
+
+router.delete('/remInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), function(req, res) {
+    axios.delete(req.app.locals.url + "api/piece/remInst?idP=" + req.query.idP + "&idI=" + req.query.idI, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
+        .then(resp => {
+            var insts = resp.data.instruments
+            insts.forEach(i => {
+                if(i._id == req.query.idI)
+                    fs.unlinkSync("public/scores/" + req.query.idP + "/" + i.score.path)
+            })
+            res.jsonp(req.app.locals.url + "pieces/" + req.query.idP)
+        })
+        .catch(error => {
+            console.log("Error in delete instrument: " + error)
+            res.status(500).jsonp("Error on delete instrument" + error)
         })
 })
 
