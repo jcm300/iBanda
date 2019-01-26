@@ -5,3 +5,4 @@ grammars/.antlr/**
 grammars/agenda/**
 grammars/news/**
 sessions/**
+log.json
