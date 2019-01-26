@@ -9,7 +9,7 @@ var auth = require("../auth/auth")
 router.get("/main", auth.isAuthenticated, (req, res) => {
     axios.get(req.app.locals.url + 'api/article', {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(articles => {
-            res.render("menus/main",{userType: req.session.type, articles: articles.data, error: req.flash('error')})
+            res.render("menus/main",{idU: req.session._id, userType: req.session.type, articles: articles.data, error: req.flash('error')})
         })
         .catch(error => {
             console.log("Error in get articles: " + error)

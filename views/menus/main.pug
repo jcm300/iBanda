@@ -10,6 +10,7 @@ block header
             a(href=url + "events" class="w3-bar-item w3-button") Agenda Management
             a(href=url + "entries" class="w3-bar-item w3-button") Support Library Management
             a(href=url + "statistics" class="w3-bar-item w3-button") Statistics
+            a(href=url + "users/updPass/" + idU class="w3-bar-item w3-button") Update Password
             a(href=url + "logout" class="w3-bar-item w3-button") Logout
     else
         if userType=="2"
@@ -20,6 +21,7 @@ block header
                 a(href=url + "articles" class="w3-bar-item w3-button") News
                 a(href=url + "events" class="w3-bar-item w3-button") Agenda
                 a(href=url + "entries" class="w3-bar-item w3-button") Support Library
+                a(href=url + "users/updPass/" + idU class="w3-bar-item w3-button") Update Password
                 a(href=url + "logout" class="w3-bar-item w3-button") Logout
         else 
             if userType=="3"
@@ -29,6 +31,7 @@ block header
                         a(href=url + "articles" class="w3-bar-item w3-button") News
                         a(href=url + "events" class="w3-bar-item w3-button") Agenda
                         a(href=url + "entries" class="w3-bar-item w3-button") Support Library
+                        a(href=url + "users/updPass/" + idU class="w3-bar-item w3-button") Update Password
                         a(href=url + "logout" class="w3-bar-item w3-button") Logout
 
 block body

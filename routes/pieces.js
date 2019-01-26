@@ -213,7 +213,7 @@ router.put('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), fu
                 if(formData.file.type=="application/pdf"){
                     var path = "public/scores/" + req.query.idP + "/" + fields['score.path']
                     //delete old file
-                    fs.unlinkSync(path)
+                    if(fs.existsSync(path)) fs.unlinkSync(path)
                     //use the name of file to save
                     var path = "public/scores/" + req.query.idP + "/" + formData.file.name
                     fields['score.path'] = formData.file.name

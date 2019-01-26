@@ -15,7 +15,6 @@ block body
         input(id="user_id" type="hidden" name="_id" value=user._id)
         input.w3-input(type="text" name="name" placeholder="Name" value=user.name required)
         input.w3-input(type="email" name="email" placeholder="Email" value=user.email required)
-        input.w3-input(type="password" name="password" placeholder="Password" pattern=".{8,}" title="Must contain minimum 8 characters" required)
         label Type:
         br
         if user.type=="1"

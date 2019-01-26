@@ -1,0 +1,23 @@
+extends ../layout2
+
+block scripts
+    script(src="/javascripts/updPass.js")
+
+block header
+    h3 Update Password
+    div(class="w3-bar w3-grey w3-large")
+        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+
+block body
+    if errorPass!=""
+        center
+            div(class="w3-panel w3-red")
+                h3= errorPass
+    input(id="user_id" type="hidden" value=idU)
+    form.w3-container(id="formUpdatePass")
+        input.w3-input(type="password" name="prevPass" id="prevPass" placeholder="Current Password" required)
+        input.w3-input(type="password" name="newPass1" id="newPass1" placeholder="New Password" pattern=".{8,}" title="Must contain minimum 8 characters" oninput="check()" required)
+        input.w3-input(type="password" name="newPass2" id="newPass2" placeholder="Repeat New Password" pattern=".{8,}" title="Must contain minimum 8 characters" oninput="check()" required)
+        br
+        input.w3-btn.w3-grey(id="upButton" type="submit" value="Update Password")
+    br

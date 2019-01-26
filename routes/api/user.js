@@ -39,6 +39,16 @@ router.put('/deleteStat', auth.isAuthenticated, function(req, res) {
         .catch(error => res.status(500).jsonp(error))
 })
 
+router.put('/updPass/:id', auth.isAuthenticated, function(req, res) {
+    if(req.params.id==req.session._id){
+        Users.updatePassword(req.params.id,req.body.prevPass,req.body.newPass)
+            .then(data => res.jsonp(data))
+            .catch(error => res.status(500).jsonp(error))
+    }else{
+        res.jsonp("You have no permission to modify a pass of another user!")
+    }
+});
+
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
     Users.updateUser(req.params.id,req.body)
         .then(data => res.jsonp(data))

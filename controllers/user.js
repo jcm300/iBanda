@@ -33,10 +33,19 @@ Users.createUser = user => {
 }
 
 Users.updateUser = (id, user) => {
-    user.password = bcrypt.hashSync(user.password,saltRounds)
     return User
-        .findOneAndUpdate({_id: id}, {$set: {name: user.name, email: user.email, password: user.password, type: user.type}}, {useFindAndModify: false})
+        .findOneAndUpdate({_id: id}, {$set: {name: user.name, email: user.email, type: user.type}}, {useFindAndModify: false})
         .exec()
+}
+
+Users.updatePassword = async (id, prevPass, newPass) => {
+    var user = await User.findOne({_id: id})
+    if(bcrypt.compareSync(prevPass,user.password)){
+        newPass = bcrypt.hashSync(newPass,saltRounds) 
+        return User
+            .findOneAndUpdate({_id: id}, {$set: {password: newPass}}, {useFindAndModify: false})
+            .exec()
+    }else return null
 }
 
 //get total views of a user
