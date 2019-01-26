@@ -10,6 +10,7 @@ var passport = require('passport')
 var session = require("express-session")
 var FileStore = require("session-file-store")(session)
 var flash = require('connect-flash')
+var fs = require('fs')
 
 require('./auth/auth')
 var auth = require('./auth/auth')
@@ -43,6 +44,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/iBanda", {useNewUrlParser: true})
 //WARNING: Change password!!!!
 auth.createAdmin("ibanda")
 
+//register logs on json file
+//open file, if not exists create it
+var accessLogStream = fs.createWriteStream(__dirname + '/log.json', {flags: 'a'});
+
 //session configuration
 app.use(session({
   genid: () => {
@@ -61,6 +66,8 @@ app.use(passport.session())
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+//save logs to file in json format
+app.use(logger('{"date": ":date[iso]", "method": ":method", "url": ":url", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "response_time": ":response-time"}', {stream: accessLogStream}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
