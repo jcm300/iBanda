@@ -1,49 +1,93 @@
 grammar agenda;
 
 agenda returns [var val, var errors]
-      : 'AGENDA' event+
-      ;
+@init {
+     $val = []
+     $errors = []
+}   :
+	'AGENDA' (
+		event {
+ 				if($event.error!="") $errors.push($event.error);
+				else $val.push($event.val);
+               } ';'
+	)+;
 
-event: title desc local time
-     ;
+event returns[var val, var error]
+@init {
+     var existsDesc = false
+}:
+	title (desc {existsDesc=true})? local time {    
+		     if($time.ts.sdate>$time.te.edate){
+	               $val = ""
+                    $error = "Start date after end date on "+$title.val+" event!"
+               }
+	          if ($time.ts.sdate==$time.te.edate && $time.ts.shour>$time.te.ehour ){
+		          $val = ""
+                    $error = "Start hour after end hour on "+$title.val+" event!"     
+               }
+               else {
+                    $val = {
+                         title: $title.val
+                         local: $local.val
+                         sdate: $time.ts.sdate
+                         shour: $time.ts.shour
+                         edate: $time.te.edate
+                         ehour: $time.te.ehour
+                    }
+                    if (existsDesc) $val.desc = $desc.val
+                    else $val.desc = []
+                    $error = ""
+               }
+          };
 
-title: 'TITLE:' TEXTO
-     ;
+title returns[var val]:
+	'TITLE:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
 
-desc: 'DESC:' TEXTO
-    ;
+desc returns[var val]:
+	'DESC:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
 
-local: 'LOCAL:' TEXTO
-     ;
+local returns[var val]:
+	'LOCAL:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
 
-time: start end 
-    ;
+time returns[var ts, var te]
+     :
+	s = start e = end { $ts = {
+                    sdate: $s.sd
+                    shour: $s.sh
+            }
+            $te = {
+                 edate: $e.ed
+                 ehour: $e.eh
+            }
+          };
 
-start: 'BEGINS:' startDate startHour
-     ;
+start returns[var sd, var sh]:
+	'BEGINS:' d = startDate h = startHour {
+               $sd = $d.val
+               $sh = $h.val
+          };
 
-end: 'ENDS:' endDate endHour
-   ;
+end returns[var ed, var eh]:
+	'ENDS:' d = endDate h = endHour {
+               $ed = $d.val
+               $eh = $h.val
+          };
 
-startDate: DATA
-	    ;
+startDate returns[var val]: DATE {$val = $DATE.text};
 
-startHour: HORA 
-	    ;
+startHour returns[var val]: HOUR {$val = $HOUR.text};
 
-endDate: DATA
-       ;
+endDate returns[var val]: DATE {$val = $DATE.text};
 
-endHour: HORA
-	  ;
+endHour returns[var val]: HOUR {$val = $HOUR.text};
 
-/* Definição do Analisador Léxico */         
-TEXTO: (('\'') ~('\'')* ('\''));
+/* Definição do Analisador Léxico */
+TEXT: (['"] ~(['"])* ['"]);
 
-fragment DIGITO: [0-9];
+fragment DIGIT: [0-9];
 
-DATA: DIGITO{4}'-'DIGITO{2}'-'DIGITO{2};
+DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT;
 
-HORA: DIGITO{2}':'DIGITO{2};
+HOUR: DIGIT DIGIT ':' DIGIT DIGIT;
 
-Separador: ( '\r'? '\n' | ' ' | '\t' )+  -> skip; 
+Separator: ( '\r'? '\n' | ' ' | '\t')+ -> skip; 
