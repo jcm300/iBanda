@@ -211,7 +211,10 @@ router.put('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), fu
         if(!error){
             if(formData.file!=null){
                 if(formData.file.type=="application/pdf"){
-                    var path = "public/scores/" + req.query.idP + "/" + fields['score.path']
+                    var path = "public/scores/" + req.query.idP 
+                    //create folder if not exists
+                    if(!fs.existsSync(path)) fs.mkdirSync(path)
+                    var path = path + "/" + fields['score.path']
                     //delete old file
                     if(fs.existsSync(path)) fs.unlinkSync(path)
                     //use the name of file to save
@@ -262,8 +265,10 @@ router.delete('/remInst', auth.isAuthenticated, auth.havePermissions(["1","2"]),
         .then(resp => {
             var insts = resp.data.instruments
             insts.forEach(i => {
-                if(i._id == req.query.idI)
-                    fs.unlinkSync("public/scores/" + req.query.idP + "/" + i.score.path)
+                if(i._id == req.query.idI){
+                    var path = "public/scores/" + req.query.idP + "/" + i.score.path 
+                    if(fs.existsSync(path)) fs.unlinkSync(path)
+                }
             })
             res.jsonp(req.app.locals.url + "pieces/" + req.query.idP)
         })
