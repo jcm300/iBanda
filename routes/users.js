@@ -28,15 +28,16 @@ function deleteSessions(id,res){
 
 router.get('/user/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/user/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(user => res.render("users/updateUser", {user: user.data}))
+        .then(user => res.render("users/updateUser", {user: user.data, error: req.flash('error')}))
         .catch(error => {
             console.log("Error while getting user: " + error)
-            res.render("error", {message: "getting user", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'users/' + req.params.id)
         }) 
 })
 
 router.get('/user', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
-    res.render("users/newUser")
+    res.render("users/newUser", {error: req.flash('error')})
 })
 
 router.get('/updPass/:id', auth.isAuthenticated, (req,res) => {
@@ -45,19 +46,21 @@ router.get('/updPass/:id', auth.isAuthenticated, (req,res) => {
 
 router.get('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/user/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(user => res.render("users/user", {user: user.data}))
+        .then(user => res.render("users/user", {user: user.data, success: req.flash('success'), error: req.flash('error')}))
         .catch(error => {
             console.log("Error while showing user: " + error)
-            res.render("error", {message: "showing user", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'users')
         })
 })
 
 router.get('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/user", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(users => res.render("users/users", {users: users.data}))
+        .then(users => res.render("users/users", {users: users.data, success: req.flash('success'), error: req.flash('error')}))
         .catch(error => {
-            console.log("Error while getting user: " + error)
-            res.render("error", {message: "getting user", error: error})
+            console.log("Error while getting users: " + error)
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'main')
         })
 })
 
@@ -76,16 +79,19 @@ router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) =
             transport.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.log("Error sending email: " + JSON.stringify(error));
-                    res.render("error",{message: "Error sending email!"})
+                    req.flash('error','Error sending email to user!')
+                    res.redirect(req.app.locals.url + 'users/user')
                 }else{
                     console.log("Sended email:" + JSON.stringify(info));
+                    req.flash('success','User created!')
                     res.redirect(req.app.locals.url + "users")
                 }
             })
         })
         .catch(error => {
             console.log("Error in insert user: " + error)
-            res.render("error", {message: "Insertion of user", error: error})
+            req.flash('error','Error. Maybe email already exists? Try again!')
+            res.redirect(req.app.locals.url + 'users/user')
         })
 })
 
@@ -94,7 +100,7 @@ router.put('/updPass/:id', auth.isAuthenticated, (req, res) => {
         axios.put(req.app.locals.url + "api/user/updPass/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
             .then(d => {
                 if(d.data!=null) {
-                    req.flash('error',"Password Changed!")
+                    req.flash('success',"Password Changed!")
                     res.jsonp(req.app.locals.url + "main")
                 }else{
                     req.flash('errorPass',"Wrong Password!")
@@ -103,7 +109,8 @@ router.put('/updPass/:id', auth.isAuthenticated, (req, res) => {
             })
             .catch(error => {
                 console.log("Error in update pass user: " + error)
-                res.status(500).jsonp("Error on update pass user" + error)
+                req.flash('error','Error. Try again!')
+                res.jsonp(req.app.locals.url + 'users/updPass/' + req.params.id)
             })
     }else{
         req.flash('error',"You have no permission to modify a pass of another user!")
@@ -115,12 +122,14 @@ router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res)
     axios.put(req.app.locals.url + "api/user/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(() => {
             //delete sessions
-            deleteSessions(req.params.id) 
+            deleteSessions(req.params.id)
+            req.flash('success','User Updated!') 
             res.jsonp(req.app.locals.url + "users/" + req.params.id)
         })
         .catch(error => {
             console.log("Error in update user: " + error)
-            res.status(500).jsonp("Error on update of user" + error)
+            req.flash('error','Error. Maybe email already exists? Try again!')
+            res.jsonp(req.app.locals.url + 'users/user/' + req.params.id)
         })
 })
 
@@ -129,11 +138,13 @@ router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, r
         .then(() => {
             //delete sessions
             deleteSessions(req.params.id,res)
+            req.flash('success','User Deleted!')
             res.jsonp(req.app.locals.url + "users")
         })
         .catch(error => {
             console.log("Error in delete user: " + error)
-            res.status(500).jsonp("Error on delete user" + error)
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'users/' + req.params.id)
         })
 })
 

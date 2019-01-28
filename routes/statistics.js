@@ -16,7 +16,8 @@ router.get('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) 
             })
             .catch(error => {
                 console.log("Error while showing user/getting statistics: " + error)
-                res.render("error", {message: "showing user/getting statistics", error: error})
+                req.flash('error','Error. Try again!')
+                res.redirect(req.app.locals.url + 'statistics')
             })
 })
 
@@ -36,12 +37,14 @@ router.get('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => 
             res.render("statistics/statistics", {
                     users: results[0].data, totalViews: results[1].data, totalDownloads: results[2].data, 
                     userMViews: results[3].data, userMDownloads: results[4].data, pieceMViews: results[5].data, 
-                    pieceMDownloads: results[6].data, views: results[7].data, downloads: results[8].data
+                    pieceMDownloads: results[6].data, views: results[7].data, downloads: results[8].data,
+                    error: req.flash('error')
                 })
         })
         .catch(error => {
             console.log("Error while getting users/statistics: " + error)
-            res.render("error", {message: "getting users/statistics", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'main')
         })
 })
 

@@ -9,10 +9,11 @@ var AgendaListener = require('../grammars/agenda/agendaListener').agendaListener
 
 router.get('/event/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(event => res.render("events/updateEvent", {event: event.data}))
+        .then(event => res.render("events/updateEvent", {event: event.data, error: req.flash('error')}))
         .catch(error => {
             console.log("Error while getting event: " + error)
-            res.render("error", {message: "getting event", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'events/' + req.params.id)
         }) 
 })
 
@@ -39,7 +40,7 @@ router.get('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,r
 })
 
 router.get('/event', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
-    res.render("events/newEvent")
+    res.render("events/newEvent", {error: req.flash('error')})
 })
 
 router.get('/export', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
@@ -58,21 +59,23 @@ router.get('/export', auth.isAuthenticated, auth.havePermissions(["1"]), (req,re
         })
         .catch(error => {
             console.log("Error while getting events: " + error)
-            res.render("error", {message: "getting events", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'events')
         })
 })
 
 router.get('/:id', auth.isAuthenticated, (req,res) => {
     axios.get(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(event => res.render("events/event", {userType: req.session.type, event: event.data}))
+        .then(event => res.render("events/event", {userType: req.session.type, event: event.data, success: req.flash('success'), error: req.flash('error')}))
         .catch(error => {
             console.log("Error while showing event: " + error)
-            res.render("error", {message: "showing event", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'events')
         })
 })
 
 router.get('/', auth.isAuthenticated, (req,res) => {
-    res.render("events/events", {userType: req.session.type})
+    res.render("events/events", {userType: req.session.type, success: req.flash('success'), error: req.flash('error')})
 })
 
 router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
@@ -104,39 +107,55 @@ router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,
         res.redirect(req.app.locals.url + "events/grammar")
     }else{
         axios.post(req.app.locals.url + "api/event/insertMany", tree.val, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-            .then(() => res.redirect(req.app.locals.url + "events"))
+            .then(() => {
+                req.flash('success', "Inserted Events!")    
+                res.redirect(req.app.locals.url + "events")
+            })
             .catch(error => {
                 console.log("Error in insert many events: " + error)
-                res.render("error", {message: "Insertion of many events", error: error})
+                req.flash('grammarError','Error. Try again!')
+                res.redirect(req.app.locals.url + 'events/grammar')
         })
     }
 })
 
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
    axios.post(req.app.locals.url + "api/event", req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-       .then(() => res.redirect(req.app.locals.url + "events"))
-       .catch(error => {
-           console.log("Error in insert event: " + error)
-           res.render("error", {message: "Insertion of event", error: error})
-       })
+        .then(() => {
+            req.flash('success',"Event created!")   
+            res.redirect(req.app.locals.url + "events")
+        })
+        .catch(error => {
+            console.log("Error in insert event: " + error)
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'events/event')
+        })
 })
 
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
    axios.put(req.app.locals.url + "api/event/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-       .then(() => res.jsonp(req.app.locals.url + "events/" + req.params.id))
-       .catch(error => {
-           console.log("Error in update event: " + error)
-           res.status(500).jsonp("Error on update of event" + error)
-       })
+        .then(() => {
+            req.flash('success', "Event updated!")   
+            res.jsonp(req.app.locals.url + "events/" + req.params.id)
+        })
+        .catch(error => {
+            console.log("Error in update event: " + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'events/event/' + req.params.id)
+        })
 })
 
 router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
    axios.delete(req.app.locals.url + "api/event/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-       .then(() => res.jsonp(req.app.locals.url + "events"))
-       .catch(error => {
-           console.log("Error in delete event: " + error)
-           res.status(500).jsonp("Error on delete event" + error)
-       })
+        .then(() => {
+            req.flash('success', "Event deleted!")   
+            res.jsonp(req.app.locals.url + "events")
+        })
+        .catch(error => {
+            console.log("Error in delete event: " + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'events/' + req.params.id)
+        })
 })
 
 module.exports = router

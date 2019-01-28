@@ -13,6 +13,14 @@ block header
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
+    if success!=""
+        center
+            div(class="w3-panel w3-green")
+                h3= success
+    if error!=""
+        center
+            div(class="w3-panel w3-red")
+                h3= error
     table.w3-table-all.w3-centered
         tr
             th Description

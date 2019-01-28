@@ -9,11 +9,11 @@ var auth = require("../auth/auth")
 router.get("/main", auth.isAuthenticated, (req, res) => {
     axios.get(req.app.locals.url + 'api/article', {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(articles => {
-            res.render("menus/main",{idU: req.session._id, userType: req.session.type, articles: articles.data, error: req.flash('error')})
+            res.render("menus/main",{idU: req.session._id, userType: req.session.type, articles: articles.data, success: req.flash('success'), error: req.flash('error')})
         })
         .catch(error => {
             console.log("Error in get articles: " + error)
-            res.render("error", {message: "Get articles", error: error})
+            res.render("error", {message: "Error", error: 'Error accessing main area. Try again!'})
         })
 })
 
@@ -24,7 +24,7 @@ router.get('/logout', auth.isAuthenticated, function(req, res){
 });
 
 router.get("/", (req, res) => {
-    if(req.session.token==null || req.session.flash.error!=null) res.render("menus/login",{error: req.flash('error')})
+    if(req.session.token==null || req.session.flash.error!=null) res.render("menus/login",{success: req.flash('success'), error: req.flash('error')})
     else res.redirect(req.app.locals.url + "main")
 })
 
@@ -46,6 +46,7 @@ router.post("/login", async (req, res, next) => {
                 req.session.token = token
                 req.session._id = user._id
                 req.session.type = user.type
+                req.flash('success','Login with success!')
                 res.redirect(req.app.locals.url + "main")
             })
         }catch(error){

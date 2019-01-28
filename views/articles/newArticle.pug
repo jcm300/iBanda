@@ -10,6 +10,10 @@ block header
         a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
 
 block body
+    if error!=""
+        center
+            div(class="w3-panel w3-red")
+                h3= error
     form.w3-container(id="formNew" method="POST" action="/articles")
         input.w3-input(type="text" name="title" placeholder="Title" required)
         input.w3-input(type="text" name="subtitle" placeholder="Subtitle")

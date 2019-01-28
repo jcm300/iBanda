@@ -11,11 +11,11 @@ var rimraf = require('rimraf')
 var auth = require("../auth/auth")
 
 router.get('/ingestion', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) => {
-    res.render('pieces/ingestion')
+    res.render('pieces/ingestion', {error: req.flash('error')})
 })
 
 router.get('/addInst/:id', auth.isAuthenticated, auth.havePermissions(["1","2"]), (req, res) => {
-    res.render('pieces/addInst.pug', {idP: req.params.id})
+    res.render('pieces/addInst.pug', {idP: req.params.id, error: req.flash('error')})
 })
 
 router.get('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), (req, res) => {
@@ -23,12 +23,13 @@ router.get('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), (r
         .then(piece => {
             piece.data.instruments.forEach(inst => {
                 if(inst._id == req.query.idI)
-                    res.render("pieces/updInst", {idP: req.query.idP, inst: inst})
+                    res.render("pieces/updInst", {idP: req.query.idP, inst: inst, error: req.flash('error')})
             })
         })
         .catch(error => {
             console.log("Error while getting piece: " + error)
-            res.render("error", {message: "getting piece", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'pieces/' + req.params.idP)
         })
 })
 
@@ -64,13 +65,14 @@ router.get('/export/:id', auth.isAuthenticated, (req, res) => {
         })
         .catch(error => {
             console.log("Error in get piece: " + error)
-            res.render("error", {message: "Get piece", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'pieces/' + req.params.id)
         })
 })
 
 router.get('/piece/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(piece => res.render("pieces/updatePiece", {piece: piece.data}))
+        .then(piece => res.render("pieces/updatePiece", {piece: piece.data, error: req.flash('error')}))
         .catch(error => {
             console.log("Error while getting piece: " + error)
             res.render("error", {message: "getting piece", error: error})
@@ -80,7 +82,7 @@ router.get('/piece/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req
 router.get('/:id', auth.isAuthenticated, (req,res) => {
     axios.get(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then(piece => {
-            res.render("pieces/piece", {userType: req.session.type, piece: piece.data})
+            res.render("pieces/piece", {userType: req.session.type, piece: piece.data, success: req.flash('success'), error: req.flash('error')})
             //update user stats
             axios.put(req.app.locals.url + "api/user/views/" + req.session._id, {idPiece: req.params.id}, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
                 .then(() => console.log("User stats updated!"))
@@ -88,16 +90,18 @@ router.get('/:id', auth.isAuthenticated, (req,res) => {
         })
         .catch(error => {
             console.log("Error in get piece: " + error)
-            res.render("error", {message: "Get piece", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'pieces')
         })
 })
 
 router.get('/', auth.isAuthenticated, (req, res) => {
     axios.get(req.app.locals.url + "api/piece", {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(pieces => res.render('pieces/dissemination',{userType: req.session.type, pieces: pieces.data}))
+        .then(pieces => res.render('pieces/dissemination',{userType: req.session.type, pieces: pieces.data, success: req.flash('success'), error: req.flash('error')}))
         .catch(error => {
             console.log("Error in get pieces: " + error)
-            res.render("error", {message: "Get of pieces", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'main')
         }) 
 })
 
@@ -122,24 +126,31 @@ router.post('/addInst/:id', auth.isAuthenticated, auth.havePermissions(["1","2"]
                     fsExtra.move(fsend,fnew, error2 => {
                         if(error2){
                             console.log("Error moving file: " + error2)
-                            res.render("error",{message: "Error moving file: ", error: error2})
+                            req.flash('error','Error. Try again!')
+                            res.redirect(req.app.locals.url + 'pieces/addInst/' + req.params.id)
                         }else{
                             axios.post(req.app.locals.url + "api/piece/addInst/" + req.params.id, fields, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-                                .then(() => res.redirect(req.app.locals.url + "pieces/" + req.params.id))
+                                .then(() => {
+                                    req.flash('success','Instrument created!')
+                                    res.redirect(req.app.locals.url + "pieces/" + req.params.id)
+                                })
                                 .catch(error => {
                                     console.log("Error in add instrument: " + error)
-                                    res.render("error",{message: "Error on add instrument", error: error})
+                                    req.flash('error','Error. Try again!')
+                                    res.redirect(req.app.locals.url + 'pieces/addInst/' + req.params.id)
                                 })
                         }
                     }) 
                 }else{
                     console.log("File is not a PDF!")
-                    res.render("error",{message:"File is not a PDF!"})
+                    req.flash('error','Error. File is not a PDF!')
+                    res.redirect(req.app.locals.url + 'pieces/addInst/' + req.params.id)
                 }
             }
         }else{
             console.log("Error in add instrument: " + error)
-            res.render("error",{message: "Error on add instrument", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'pieces/addInst/' + req.params.id)
         }
     })
 });
@@ -178,27 +189,33 @@ router.post('/', auth.isAuthenticated, auth.havePermissions(["2"]), (req, res) =
                                     p.data.instruments.forEach( inst => {
                                         zip.extractEntryTo(inst.score.path,"public/scores/" + p.data._id + "/",true)
                                     })
+                                    req.flash('success','SIP ingested with success!')
                                     res.redirect(req.app.locals.url + "pieces")
                                 })
                                 .catch(error => {
                                     console.log("Error in insert SIP in DB: " + error)
-                                    res.render("error", {message: "Insertion of SIP in DB", error: error})
+                                    req.flash('error',"Error. Maybe manifest doesn't have the necessary attributes? Try again!")
+                                    res.redirect(req.app.locals.url + 'pieces/ingestion')
                                 })
                         }else{
                             console.log("Error in insert SIP: Some referenced files not exists")
-                            res.render("error", {message: "Insertion of SIP", error: "Some referenced files not exists!"})
+                            req.flash('error','Error. Some referenced files not exists! Try again!')
+                            res.redirect(req.app.locals.url + 'pieces/ingestion')
                         }
                     }else{
                         console.log("Error in insert SIP: JSON Syntax incorrect")
-                        res.render("error", {message: "Insertion of SIP", error: "JSON Syntax incorrect! Instruments doesn't exist!"}) 
+                        req.flash('error',"Error. JSON Syntax incorrect! Instruments doesn't exist! Try again!")
+                        res.redirect(req.app.locals.url + 'pieces/ingestion')
                     }
                 }else{
                     console.log("Error in insert SIP: Manifest not exists or in subfolder")
-                    res.render("error", {message: "Insertion of SIP", error: "Manifest not exists or in subfolder!"}) 
+                    req.flash('error',"Error. Manifest not exists or in subfolder! Try again!")
+                    res.redirect(req.app.locals.url + 'pieces/ingestion')
                 }
             }catch(e){
                 console.log("Error in insert SIP: " + e)
-                res.render("error", {message: "Insertion of SIP", error: e})
+                req.flash('error',"Error. Maybe manifest doesn't use JSON syntax? Try again!")
+                res.redirect(req.app.locals.url + 'pieces/ingestion')
             }
         }
     })
@@ -228,35 +245,46 @@ router.put('/updInst', auth.isAuthenticated, auth.havePermissions(["1","2"]), fu
                     fsExtra.move(formData.file.path, path, error2 => {
                         if(error2){
                             console.log("Error moving file: " + error2)
-                            res.status(500).jsonp("Error moving file: " + error2)
+                            req.flash('error','Error. Try again!')
+                            res.jsonp(req.app.locals.url + 'pieces/updInst?idP=' + req.query.idP + '&idI=' + req.query.idI)
                         }else{
                             //update BD
                             axios.put(req.app.locals.url + "api/piece/updInst?idP=" + req.query.idP + "&idI=" + req.query.idI, fields, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-                                .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.query.idP))
+                                .then(() => {
+                                    req.flash('success', 'Instrument updated!')
+                                    res.jsonp(req.app.locals.url + "pieces/" + req.query.idP)
+                                })
                                 .catch(error => {
                                     console.log("Error in update instrument: " + error)
-                                    res.status(500).jsonp("Error on update instrument" + error)
+                                    req.flash('error','Error. Try again!')
+                                    res.jsonp(req.app.locals.url + 'pieces/updInst?idP=' + req.query.idP + '&idI=' + req.query.idI)
                                 })
                         }
                     }) 
                 }else{
                     console.log("File is not a PDF!")
-                    res.status(500).jsonp("File is not a PDF!")
+                    req.flash('error','Error. File is not a PDF! Try again!')
+                    res.jsonp(req.app.locals.url + 'pieces/updInst?idP=' + req.query.idP + '&idI=' + req.query.idI)
                 }
             }
         }else{
             console.log("Error in update instrument: " + error)
-            res.status(500).jsonp("Error on update instrument" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'pieces/updInst?idP=' + req.query.idP + '&idI=' + req.query.idI)
         }
     })
 });
 
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.put(req.app.locals.url + "api/piece/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.jsonp(req.app.locals.url + "pieces/" + req.params.id))
+        .then(() => {
+            req.flash('success',"Piece updated!")
+            res.jsonp(req.app.locals.url + "pieces/" + req.params.id)
+        })
         .catch(error => {
             console.log("Error in update piece: " + error)
-            res.status(500).jsonp("Error on update of piece" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'pieces/piece' + req.params.id) 
         })
 })
 
@@ -270,11 +298,13 @@ router.delete('/remInst', auth.isAuthenticated, auth.havePermissions(["1","2"]),
                     if(fs.existsSync(path)) fs.unlinkSync(path)
                 }
             })
+            req.flash('success','Instrument deleted!')
             res.jsonp(req.app.locals.url + "pieces/" + req.query.idP)
         })
         .catch(error => {
             console.log("Error in delete instrument: " + error)
-            res.status(500).jsonp("Error on delete instrument" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'pieces/' + req.query.idP)
         })
 })
 
@@ -282,6 +312,7 @@ router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, r
     axios.delete(req.app.locals.url + "api/piece/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
         .then( p => {
             rimraf.sync("public/scores/" + p.data._id)
+            req.flash('success','Piece deleted!')
             res.jsonp(req.app.locals.url + "pieces")
             //update user stats
             axios.put(req.app.locals.url + "api/user/deleteStat", {idPiece: req.params.id}, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
@@ -290,7 +321,8 @@ router.delete('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, r
         })
         .catch(error => {
             console.log("Error in delete piece: " + error)
-            res.status(500).jsonp("Error on delete piece" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'pieces/' + req.params.id)
         })
 })
 

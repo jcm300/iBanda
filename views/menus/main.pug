@@ -35,6 +35,10 @@ block header
                         a(href=url + "logout" class="w3-bar-item w3-button") Logout
 
 block body
+    if success!=""
+        center
+            div(class="w3-panel w3-green")
+                h3= success
     if error!=""
         center
             div(class="w3-panel w3-red")

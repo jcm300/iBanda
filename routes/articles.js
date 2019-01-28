@@ -12,7 +12,8 @@ router.get('/authors/:author', auth.isAuthenticated, (req,res) => {
         .then(articles => res.render("articles/articlesBy", {userType: req.session.type, articles: articles.data, tag: "Author", by: req.params.author}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
-            res.render("error", {message: "getting articles", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'articles')
         }) 
 })
 
@@ -21,16 +22,18 @@ router.get('/topics/:topic', auth.isAuthenticated, (req,res) => {
         .then(articles => res.render("articles/articlesBy", {userType: req.session.type, articles: articles.data, tag: "Topic", by: req.params.topic}))
         .catch(error => {
             console.log("Error while getting articles: " + error)
-            res.render("error", {message: "getting articles", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'articles')
         }) 
 })
 
 router.get('/article/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
     axios.get(req.app.locals.url + "api/article/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(article => res.render("articles/updateArticle", {article: article.data}))
+        .then(article => res.render("articles/updateArticle", {article: article.data, error: req.flash('error')}))
         .catch(error => {
             console.log("Error while getting article: " + error)
-            res.render("error", {message: "getting article", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'articles/' + req.params.id)
         }) 
 })
 
@@ -57,20 +60,21 @@ router.get('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,r
 })
 
 router.get('/article', auth.isAuthenticated, auth.havePermissions(["1"]), (req,res) => {
-    res.render("articles/newArticle")
+    res.render("articles/newArticle", {error: req.flash('error')})
 })
 
 router.get('/:id', auth.isAuthenticated, (req,res) => {
     axios.get(req.app.locals.url + "api/article/" + req.params.id, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(article => res.render("articles/article", {userType: req.session.type, article: article.data}))
+        .then(article => res.render("articles/article", {userType: req.session.type, article: article.data, success: req.flash('success'), error: req.flash('error')}))
         .catch(error => {
             console.log("Error while getting article: " + error)
-            res.render("error", {message: "getting article", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'articles')
         }) 
 })
 
 router.get('/', auth.isAuthenticated, (req,res) => {
-    res.render("articles/articles", {userType: req.session.type})
+    res.render("articles/articles", {userType: req.session.type, success: req.flash('success'), error: req.flash('error')})
 })
 
 router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
@@ -103,38 +107,54 @@ router.post('/grammar', auth.isAuthenticated, auth.havePermissions(["1"]), (req,
     }else{
         tree.val.forEach(a => a.visible=true)
         axios.post(req.app.locals.url + "api/article/insertMany", tree.val, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-            .then(() => res.redirect(req.app.locals.url + "articles"))
+            .then(() => {
+                req.flash('success', "Inserted Articles!")   
+                res.redirect(req.app.locals.url + "articles")
+            })
             .catch(error => {
                 console.log("Error in insert many articles: " + error)
-                res.render("error", {message: "Insertion of many articles", error: error})
+                req.flash('grammarError','Error. Try again!')
+                res.redirect(req.app.locals.url + 'articles/grammar')
         })
     }
 })
 
 router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.post(req.app.locals.url + "api/article", req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.redirect(req.app.locals.url + "articles"))
+        .then(() => {
+            req.flash('success', 'Article created!')
+            res.redirect(req.app.locals.url + "articles")
+        })
         .catch(error => {
             console.log("Error in insert article: " + error)
-            res.render("error", {message: "Insertion of article", error: error})
+            req.flash('error','Error. Try again!')
+            res.redirect(req.app.locals.url + 'articles/article')
         })
 })
 
 router.put('/visible/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.put(req.app.locals.url + "api/article/visible/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
+        .then(() => {
+            req.flash('success',"Article visibility changed!")
+            res.jsonp(req.app.locals.url + "articles/" + req.params.id)
+        })
         .catch(error => {
             console.log("Error in update visibility of article: " + error)
-            res.status(500).jsonp("Error on update visibility of article" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'articles/' + req.params.id)
         })
 })
 
 router.put('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), (req, res) => {
     axios.put(req.app.locals.url + "api/article/" + req.params.id, req.body, {headers: {"cookie": req.headers.cookie}, withCredentials: true})
-        .then(() => res.jsonp(req.app.locals.url + "articles/" + req.params.id))
+        .then(() => {
+            req.flash('success', 'Article updated!')
+            res.jsonp(req.app.locals.url + "articles/" + req.params.id)
+        })
         .catch(error => {
             console.log("Error in update article: " + error)
-            res.status(500).jsonp("Error on update of article" + error)
+            req.flash('error','Error. Try again!')
+            res.jsonp(req.app.locals.url + 'articles/article' + req.params.id)
         })
 })
 
