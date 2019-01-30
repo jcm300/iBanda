@@ -46,35 +46,36 @@ block body
     h2 News
     ul.w3-ul.w3-large.w3-hoverable
         for a in articles
-            li 
-                p
-                    b Title: 
-                    a(href= url + "articles/" + a._id) #{a.title}
-                p
-                    b Subtitle: 
-                    if a.subtitle 
-                        | #{a.subtitle}
-                    else
-                        | ---
-                p
-                    b Date: 
-                    | #{a.date}
-                p
-                    b Authors: 
-                    if a.authors[0]
-                        - for(var i=0; i<a.authors.length-1; i++)
-                            a(href=url + "articles/authors/" + a.authors[i]) #{a.authors[i]}
-                            | , 
-                        a(href=url + "articles/authors/" + a.authors[a.authors.length-1]) #{a.authors[a.authors.length-1]} 
-                    else
-                        | ---
-                p(style="white-space:pre") #{a.body}
-                p
-                    b Topics: 
-                    if a.topics[0]
-                        - for(var i=0; i<a.topics.length-1; i++)
-                            a(href=url + "articles/topics/" + a.topics[i]) #{a.topics[i]}
-                            | , 
-                        a(href=url + "articles/topics/" + a.topics[a.topics.length-1]) #{a.topics[a.topics.length-1]}
-                    else
-                        | ---
+            if a.visible
+                li(class="w3-block w3-hover-black") 
+                    p
+                        b Title: 
+                        a(href= url + "articles/" + a._id) #{a.title}
+                    p
+                        b Subtitle: 
+                        if a.subtitle 
+                            | #{a.subtitle}
+                        else
+                            | ---
+                    p
+                        b Date: 
+                        | #{a.date}
+                    p
+                        b Authors: 
+                        if a.authors[0]
+                            - for(var i=0; i<a.authors.length-1; i++)
+                                a(href=url + "articles/authors/" + a.authors[i]) #{a.authors[i]}
+                                | , 
+                            a(href=url + "articles/authors/" + a.authors[a.authors.length-1]) #{a.authors[a.authors.length-1]} 
+                        else
+                            | ---
+                    p(style="white-space:pre") #{a.body}
+                    p
+                        b Topics: 
+                        if a.topics[0]
+                            - for(var i=0; i<a.topics.length-1; i++)
+                                a(href=url + "articles/topics/" + a.topics[i]) #{a.topics[i]}
+                                | , 
+                            a(href=url + "articles/topics/" + a.topics[a.topics.length-1]) #{a.topics[a.topics.length-1]}
+                        else
+                            | ---

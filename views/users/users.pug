@@ -26,7 +26,7 @@ block body
             th Email
             th Type
         for u in users
-            tr
+            tr.w3-hover-black
                 td
                     a(href=url + "users/" + u._id) #{u.name}
                 td= u.email

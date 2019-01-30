@@ -4,7 +4,7 @@ block scripts
     script(src="/javascripts/entry.js")
 
 block header
-    h1= entry.fileName
+    h1= entry.desc
     div(class="w3-bar w3-grey w3-large")
         if userType=="1"
             a(href=url + "entries/entry/" + entry._id class="w3-button w3-bar-item") Edit Entry

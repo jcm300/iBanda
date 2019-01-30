@@ -51,7 +51,7 @@ block body
             th Views
             th Downloads
         for u in users
-            tr
+            tr.w3-hover-black
                 td
                     a(href=url + "statistics/" + u._id) #{u.name}
                 td= u.email
@@ -61,6 +61,14 @@ block body
                     td Producer
                 if u.type=="3"
                     td Consumer
-                td= views[u._id]
-                td= downloads[u._id]
+                td
+                    if views[u._id]
+                        | #{views[u._id]}
+                    else
+                        | 0
+                td
+                    if downloads[u._id]
+                        | #{downloads[u._id]}
+                    else
+                        | 0
     br

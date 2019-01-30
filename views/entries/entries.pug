@@ -22,11 +22,11 @@ block body
     input(class="w3-input w3-border w3-padding" type="text" placeholder="Search by description.." id="input" onkeyup="filter()")
 
     table.w3-table-all.w3-centered(id="table")
-        tr
+        tr.w3-grey.w3-large
             th Description
             th PDF
         for entry in entries
-            tr
+            tr.w3-hover-black
                 td
                     a(href=url + "entries/" + entry._id) #{entry.desc}
                 td

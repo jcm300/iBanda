@@ -1,6 +1,6 @@
 for a in articles
     if a.visible
-        li
+        li(class="w3-block w3-hover-black")
             p
                 b Title: 
                 a(href=url + "articles/" + a._id) #{a.title}
@@ -31,7 +31,7 @@ for a in articles
                     <b>Topics:</b> ---
     else
         if userType=="1"
-            li
+            li(class="w3-block w3-hover-black")
                 p
                     b Title: 
                     a(href=url + "articles/" + a._id) #{a.title} 
