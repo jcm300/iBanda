@@ -1,0 +1,16 @@
+NEWS:
+
+TITLE: 'Banda Filarmónica da UM'
+BODY: 'A banda filarmónica da Universidade do Minho bateu este mês o recorde de concertos por ano.'
+DATE: 2019-03-27
+
+TITLE: 'A melhor Banda Filarmónica'
+BODY: 'Campeã do Mundial de Bandas Filarmónicas.'
+AUTHORS: 'D. Barbosa' , 'JC Martins'
+
+TITLE: 'Banda Filarmónica da UM'
+DATE: 2018-12-27
+AUTHORS: 'D. Barbosa' , 'JC Martins'
+SUBTITLE: 'Recorde de Concertos Ultrassado'
+TOPICS: 'Universidade do Minho' , 'concertos'
+BODY: 'A banda filarmónica da Universidade do Minho bateu este mês o recorde de concertos por ano.'

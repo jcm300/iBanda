@@ -1,0 +1,11 @@
+AGENDA:
+
+TITLE: 'Festa das Colheitas'
+DESC: 'Celebração do mundo rural: agricultura, gastronomia, tradições.'
+LOCAL: 'Vila Verde'
+BEGINS: 2019-10-03 09:00
+ENDS: 2019-10-07 23:00
+
+TITLE: 'Santo Isidro'
+BEGINS: 2019-09-30 10:00
+ENDS: 2019-09-30 11:00
