@@ -1,5 +1,4 @@
 node_modules/**
-package-lock.json
 grammars/.gradle/**
 grammars/.antlr/**
 grammars/agenda/**

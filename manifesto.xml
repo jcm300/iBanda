@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE manifesto SYSTEM "file:/home/jcm300/1ºSemestre/PRI/manifesto.dtd">
+<manifesto>
+    <meta>
+        <id>PRI_TP_2018</id>
+        <título>iBanda</título>
+        <subtítulo>Arquivo Digital Musical</subtítulo>
+        <dinício>16/11/2018</dinício>
+        <dfim>31/01/2019</dfim>
+        <supervisor>
+            <nome>José Carlos Ramalho</nome>
+            <email>jcr@di.uminho.pt</email>
+            <website>http://www.di.uminho.pt/~jcr</website>
+        </supervisor>
+    </meta>
+    <equipe>
+        <elemento> 
+            <id>A78679</id>
+            <nome>Diana Ribeiro Barbosa</nome>
+            <email>a78679@alunos.uminho.pt</email>
+            <website>https://github.com/eowynpt</website>
+            <foto path=""/>
+        </elemento>
+        <elemento>
+            <id>A78821</id>
+            <nome>José Carlos Lima Martins</nome>
+            <email>a78821@alunos.uminho.pt</email>
+            <website>https://www.linkedin.com/in/jose-carlos-martins</website>
+            <foto path=""/>
+        </elemento>
+    </equipe>
+    <resumo>
+        <para>Neste trabalho foi desenvolvido o <b>iBanda</b> que consiste numa aplicação <i>web</i> que implementa um repositório digital de obras musicais e respetivas partituras, respeitando a estrutura do modelo de referência internacional OAIS (”Open Archive Information System”).</para>
+        <para>O projeto destina-se a ser usado por uma banda filarmónica para aceder às partituras, bastanto apenas terem acesso à internet uma conta válida.</para>
+        <para>O sistema permite ainda a gestão de uma agenda de eventos, gestão de notícias, gestão dos utilizadores/músicos da banda, gestão de repertórios e gestão de uma pequena biblioteca de suporte.</para>
+        <para>Neste modelo existem 3 tipos de atores: o utilizador do tipo <b>produtor</b> que deposita partituras e cataloga as obras, o <b>admnistrador</b> que gere e mantem o sistema e, por fim, o <b>consumidor</b> que consulta e descarrega a informação disponibilizada. Assim, segue que cada um pertencerá a um de três tipos de utilizadores do sistema, com permissões específicas à sua posição segundo o modelo OAIS.</para>
+        <para>Relativamente à estrutura da aplicação, segue o modelo <b>MVC</b> (Model-View-Controller), sendo que a base de dados utilizada foi o MongoDB.</para>
+        <para>Por fim, de forma a conseguir instalar o sistema é necessário ter instalado as seguintes dependências: Java 8(jdk), Gradle, MongoDB e npm. Após a instalação destas dependências basta apenas correr <i>./install.sh i</i>, por forma a instalar o sistema.</para>
+    </resumo>
+    <resultados>
+        <resultado path="manifesto.xml">Manifesto em XML</resultado>
+        <resultado path="report.pdf">Relatório do Trabalho</resultado>
+        <resultado path="package.json">Metadados e dependências do sistema desenvolvido</resultado>
+        <resultado path="models/">Pasta com os Modelos</resultado>
+        <resultado path="controllers/">Pasta com os Controllers</resultado>
+        <resultado path="auth/">Pasta com grande parte das funções de autenticação</resultado>
+        <resultado path="routes/">Pasta com os Routers</resultado>
+        <resultado path="views/">Pasta com as Vistas</resultado>
+        <resultado path="public/">Pasta com os javascripts do lado do cliente, w3.css, imagens</resultado>
+        <resultado path="convertAndImport.sh">Script para converter e importar o dataset</resultado>
+        <resultado path="install.sh">Script com vários modos para instalar/correr o sistema</resultado>
+        <resultado path=".">Tudo</resultado>
+    </resultados>
+</manifesto>
