@@ -21,11 +21,11 @@ event returns[var val, var error]
      {    
           if($time.ts.sdate>$time.te.edate){
                $val = ""
-               $error = "Start date after end date on "+$title.val+" event!"
+               $error = "Start date after end date on \"" + $title.val + "\" event!"
           }else{
                if ($time.ts.sdate==$time.te.edate && $time.ts.shour>$time.te.ehour ){
                     $val = ""
-                    $error = "Start hour after end hour on "+$title.val+" event!"     
+                    $error = "Start hour after end hour on \"" + $title.val + "\" event!"     
                }else {
                     $val = {
                          title: $title.val,

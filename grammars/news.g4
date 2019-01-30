@@ -49,7 +49,7 @@ news returns [var val, var error]
 			$error = ""
 		}else{
 			$val = ""
-			$error = "Date is in the future on " + $titles.titleOut + " article!"
+			$error = "Date is in the future on \"" + $titles.titleOut + "\" article!"
 		}
 	}
     ;
