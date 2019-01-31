@@ -73,8 +73,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash())
+
+//protect files in public folder
+app.use("/scores/*", auth.isAuthenticated)
+app.use("/pdfs/*",auth.isAuthenticated)
+app.use("/javascripts/*",auth.isAuthenticated)
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/user', usersAPIRouter)
 app.use('/api/event', eventsAPIRouter)
