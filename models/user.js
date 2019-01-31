@@ -15,6 +15,7 @@ var UserSchema = new Schema(
         email: {type: String, required: true, index: {unique: true}},
         password: {type: String, required: true},
         type: {type: String, required: true},
+        approved: {type: Boolean, required: true},
         stats: {type: [StatisticsSchema]}
     }
 )

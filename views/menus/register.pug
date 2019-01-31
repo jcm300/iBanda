@@ -1,10 +1,9 @@
 extends ../layout2
 
 block header
-    h3 New User
+    h3 Register
     div(class="w3-bar w3-grey w3-large")
-        a(href= url + "users" class="w3-button w3-grey w3-bar-item") Back to Users Menu
-        a(href= url + "main" class="w3-button w3-grey w3-bar-item") Back to Main Menu
+        a(href= url class="w3-button w3-grey w3-bar-item") Back to Login
 
 block body
     if error!=""
@@ -26,5 +25,5 @@ block body
         input(type="radio" name="type" value="3" checked)
         |  Consumer
         br
-        input.w3-btn.w3-grey(type="submit" value="Create")
+        input.w3-btn.w3-grey(type="submit" value="Register")
     br

@@ -9,6 +9,10 @@ block content
                         img(src="images/logo.png" alt="Logo" height="42")
             
             .w3-container
+                if success!=""
+                    center
+                        div(class="w3-panel w3-green")
+                            h3= success
                 if error!=""
                     center
                         div(class="w3-panel w3-red")
@@ -24,6 +28,8 @@ block content
                             b Password
                         input.w3-input.w3-border.w3-grey(name="password" type="password")
                         br
+                        a(href=url + "users/user" class="w3-button w3-grey") Register
+                        span 
                         input.w3-button.w3-grey(type="submit" value="Login")
             br
             footer.w3-container.w3-grey

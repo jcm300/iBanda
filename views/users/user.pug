@@ -6,6 +6,8 @@ block scripts
 block header
     h1= user.name
     div(class="w3-bar w3-grey w3-large")
+        if !user.approved
+            a(href=url + "users/approve/" + user._id class="w3-button w3-bar-item") Approve User Registration
         a(href=url + "users/user/" + user._id class="w3-button w3-bar-item") Edit User
         button.w3-button.w3-bar-item(id="delete" value=user._id) Delete User
         a(href= url + "users" class="w3-button w3-grey w3-bar-item") Back to Users Menu
@@ -38,3 +40,9 @@ block body
                 td Producer
             if user.type=="3"
                 td Consumer
+        tr
+            th Registration Approved?
+            if user.approved
+                td yes
+            else
+                td no

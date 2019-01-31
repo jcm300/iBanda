@@ -3,6 +3,12 @@ var router = express.Router();
 var Users = require("../../controllers/user")
 var auth = require("../../auth/auth")
 
+router.get('/approve/:id', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
+    Users.approve(req.params.id)
+        .then(data => res.jsonp(data))
+        .catch(error => res.status(500).jsonp(error))
+});
+
 router.get('/:id', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
     Users.getUser(req.params.id)
         .then(data => res.jsonp(data))
@@ -15,7 +21,8 @@ router.get('/', auth.isAuthenticated, auth.havePermissions(["1"]), function(req,
         .catch(error => res.status(500).jsonp(error))
 });
 
-router.post('/', auth.isAuthenticated, auth.havePermissions(["1"]), function(req, res) {
+router.post('/', auth.authenticated, function(req, res) {
+    req.body.approved = false
     Users.createUser(req.body)
         .then(data => res.jsonp(data))
         .catch(error => res.status(500).jsonp(error))

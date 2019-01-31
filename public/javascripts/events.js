@@ -19,6 +19,7 @@ function filter() {
 }
 
 $(()=> {
+    $('#input').val('')
     $("#l").remove();
     $("#eventsDay").append("<div id=\"l\"></div>")
     $("#l").load(url + "events/list")

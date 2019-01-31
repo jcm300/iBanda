@@ -23,12 +23,11 @@ router.get('/logout', auth.isAuthenticated, function(req, res){
     res.redirect('/')
 });
 
-router.get("/", (req, res) => {
-    if(req.session.token==null || req.session.flash.error!=null) res.render("menus/login",{success: req.flash('success'), error: req.flash('error')})
-    else res.redirect(req.app.locals.url + "main")
+router.get("/", auth.authenticated, (req, res) => {
+    res.render("menus/login",{success: req.flash('success'), error: req.flash('error')})
 })
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", auth.authenticated, async (req, res, next) => {
     passport.authenticate("login", async (err, user, info) => {
         try{
             if(err || !user) {
@@ -42,7 +41,7 @@ router.post("/login", async (req, res, next) => {
                 var myuser = {_id: user._id, email: user.email}
                 //Token Generation
                 var privateKey = fs.readFileSync("./auth/private.key", "utf8")
-                var token = jwt.sign({user: myuser}, privateKey, {expiresIn: '30m'})
+                var token = jwt.sign({user: myuser}, privateKey, {expiresIn: '30m', algorithm: "RS256"})
                 req.session.token = token
                 req.session._id = user._id
                 req.session.type = user.type

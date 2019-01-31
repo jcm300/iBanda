@@ -1,3 +1,7 @@
+$(() => {
+    $('#input').val('')
+})
+
 function filter() {
     var input, filter, table, tr, td, a;
     

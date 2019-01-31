@@ -20,6 +20,7 @@ function filter() {
 }
 
 $(() => {
+    $('#input').val('')
     $("#l").remove()
     $("#news").append("<div id=\"l\"></div>")
     $("#l").load(url + "articles/list")

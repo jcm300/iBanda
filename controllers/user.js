@@ -32,6 +32,12 @@ Users.createUser = user => {
     return User.create(user)
 }
 
+Users.approve = id => {
+    return User
+        .findOneAndUpdate({_id: id}, {$set: {approved: true}}, {useFindAndModify: false})
+        .exec()
+}
+
 Users.updateUser = (id, user) => {
     return User
         .findOneAndUpdate({_id: id}, {$set: {name: user.name, email: user.email, type: user.type}}, {useFindAndModify: false})
