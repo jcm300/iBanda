@@ -1,0 +1,367 @@
+\section{Gramáticas}\label{c:gramaticas}
+Um das funcionalidades interessantes do sistema é a possibilidade de adicionar eventos e notícias de forma textual, isto é, introduzindo um texto estruturado com as informações necessárias à inserção da informação na base de dados. Esta opção está disponível na secção \textit{News management} com a opção \textit{Insert Articles by Grammar} e na secção \textit{Agenda management} com a opção \textit{Insert Events By Grammar}.
+Para esta poder ser completada com sucesso, isto é, a informação ser extraída corretamente e serem criados eventos/notícias, o texto introduzido é verificado quanto à sua correção sintática de acordo com as gramáticas elaboradas. Também é importante referir que estas funcionalidades apenas estão disponíveis para o administrador.
+
+
+\subsection{Agenda}
+Para a criação da funcionalidade de adicionar eventos \textit{by grammar}, começamos por criar o ficheiro com a gramática de atributos utilizada na verificação. Nesse sentido, analisamos os \textit{Schemas} disponíveis na pasta \texttt{Models}, nomeadamente os relativos ao artigos de notícias e aos eventos da agenda. Isto permitiu-nos saber que atributos incluir na gramática e também quais são ou não \textit{required} para definir corretamente as produções.
+
+A gramática de atributos criada tem o seu código escrito em \textit{JavaScript} e possui 14 produções (\texttt{agenda,} \texttt{event,} \texttt{title,} \texttt{desc,} \texttt{local,} \texttt{time,} \texttt{start,} \texttt{end,} \texttt{start,} \texttt{end,} \texttt{startDate,} \texttt{startHour,} \texttt{endDate} e \texttt{endHour}).
+Fazemos algumas verificações, nomeadamente a correção temporal, isto é, se a a data marcada para o fim do evento é efetivamente depois da data inicial (caso o evento seja num só dia, verifica se a hora de fim é posterior à hora de início).
+
+Segue-se um excerto da gramática em questão.
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+grammar agenda;
+
+agenda returns [var val, var errors]
+@init {
+     $val = []
+     $errors = []
+}   
+     : 'AGENDA:' (
+		event {
+ 				if($event.error!="") $errors.push($event.error);
+				else $val.push($event.val);
+               } ';'
+	)+;
+
+event returns[var val, var error]
+@init {
+     var existsDesc = false
+     var existsLocal = false
+}
+	: title (desc {existsDesc=true})? (local {existsLocal=true})? time 
+     {    
+          if($time.ts.sdate>$time.te.edate){
+               $val = ""
+               $error = "Start date after end date on "+$title.val+" event!"
+          }else{
+               if ($time.ts.sdate==$time.te.edate && $time.ts.shour>$time.te.ehour ){
+                    $val = ""
+                    $error = "Start hour after end hour on "+$title.val+" event!"     
+               }else {
+                    $val = {
+                         title: $title.val,
+                         startDate: $time.ts.sdate,
+                         startHour: $time.ts.shour,
+                         endDate: $time.te.edate,
+                         endHour: $time.te.ehour
+                    }
+                    if (existsDesc) $val.desc = $desc.val
+                    else $val.desc = ""
+                    if (existsLocal) $val.local = $local.val
+                    else $val.local = ""
+                    $error = ""
+               }
+          }
+     }
+     ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{agenda.g4} \textit{da pasta} \texttt{grammars}.
+\end{center}
+
+No excerto acima é possível ver a verificação da data e a criação da mensagem de erro, quando esta se aplica. É ainda possível ver que a gramática permite a adição de vários eventos de uma só vez. Assim, o resultado de tentar adicionar os eventos do ficheiro abaixo seria  inserção correta destes, visto que respeitam a estrutura definida na gramática sendo portanto um exemplo sintaticamente correto. Por outro lado, a nível semântico, também não acarreta problemas já que as datas/horas seguem as regras definidas.
+
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    AGENDA:
+
+    TITLE: 'Festa das Colheitas'
+    DESC: 'Celebração do mundo rural: agricultura, gastronomia, tradições.'
+    LOCAL: 'Vila Verde'
+    BEGINS: 2019-10-03 09:00
+    ENDS: 2019-10-07 23:00
+    ;
+    
+    TITLE: 'Santo Isidro'
+    BEGINS: 2019-09-30 10:00
+    ENDS: 2019-09-30 11:00
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Ficheiro} \texttt{agenda\_right.g4} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+No entanto, o ficheiro abaixo não irá resultar na inserção do evento nele definido. Apesar de os campos obrigatórios se encontrarem todos definidos, a nível semântico é possível verificar que o \textit{time} definido não faz sentido uma vez que a hora de fim do evento é posterior à hora de início (sendo que o evento é de um só dia). Assim, o evento não pode ser inserido e resulta na mensagem de erro \textit{"Start hour after end hour on ``Santo Isidro'' event!"}
+
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    AGENDA:
+
+    TITLE: 'Santo Isidro'
+    BEGINS: 2019-09-30 10:00
+    ENDS: 2019-09-30 08:00
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{agenda\_wrong.g4} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+O exemplo abaixo também não pode ser inserido já que não contém dois dos campos obrigatórios (\texttt{BEGINS:} e \texttt{ENDS:}), nomeadamente data e hora de início e fim. Assim, falha devido a erros sintáticos, apesar do título, descrição e local estarem bem definidos.
+
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    AGENDA:
+
+    TITLE: 'Festa São Miguel'
+    DESC: 'Banda toca na procissão.'
+    LOCAL: 'Prado São Miguel'
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{agenda\_wrong.g4} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+Por fim, a tentativa de inserção do evento '\textit{Festas das Colheitas}' irá falhar também devido erros sintáticos como o anterior.
+Efetivamente, todos os campos (\texttt{TITLE}, \texttt{DESC}, \texttt{BEGINS}, \texttt{ENDS} e \texttt{LOCAL}) estão corretamente definidos, e a datas/horas seguem as regras estipuladas. No entanto, não estão pela ordem esperada (definida na gramática), logo resultam em erros sintáticos.
+
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    AGENDA:
+
+    TITLE: 'Festa das Colheitas'
+    BEGINS: 2019-10-03 09:00
+    ENDS: 2019-10-07 23:00
+    DESC: 'Celebração do mundo rural: agricultura, gastronomia, tradições.'
+    LOCAL: 'Vila Verde'
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{agenda\_wrong.g4} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+\subsection{News}
+A opção \textit{Add Article By Grammar} foi concebida, tal como a sua semelhante dos eventos, tendo como base o seu ficheiro correspondente nos \texttt{Models}, concretamente, o \textit{schema} definido no \texttt{article.js}. A gramática em questão possui 10 produções: \texttt{newspaper}, \texttt{news}, \texttt{titles}, \texttt{title}, \texttt{topics}, \texttt{topic}, \texttt{body}, \texttt{date}, \texttt{authors} e \texttt{author}.
+
+A nível de verificações efetuadas, é conferida a data da notícia e, caso essa seja posterior ao dia atual, a inserção falha com o aviso \textit{Date is in the future on X article}. 
+
+Segue-se um excerto da gramática.
+
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+grammar news;
+
+newspaper returns [var val, var errors]
+@init{
+	$val = []
+	$errors = []
+}
+		 :'NEWS:' (news {
+			 if($news.error!="") $errors.push($news.error);
+			 else $val.push($news.val);
+		 } ';')+
+		 ;
+
+news returns [var val, var error]
+@init{
+	function today(){
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth() + 1; //January is 0!
+		var yyyy = today.getFullYear();
+
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+
+		if (mm < 10) {
+			mm = '0' + mm;
+		}
+
+		today = yyyy + '-' + mm + '-' + dd;
+		return today;
+	}
+	var existTopics = false
+	var existAuthors = false
+}
+	: titles (topics {existTopics = true})? body date (authors {existAuthors = true})?
+	{
+		if(today()>=$date.val){
+			$val = {
+				title: $titles.titleOut,
+				subtitle: $titles.subtitle,
+				body: $body.val,
+				date: $date.val
+			}
+			if(existTopics) $val.topics = $topics.val
+			else $val.topics = []
+			if(existAuthors) $val.authors = $authors.val
+			else $val.authors = []
+			$error = ""
+		}else{
+			$val = ""
+			$error = "Date is in the future on " + $titles.titleOut + " article!"
+		}
+	}
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{news.g4} \textit{da pasta} \texttt{grammars}.
+\end{center}
+
+
+Segue-se um exemplo que resulta na adição à coleção dos artigos de notícias, visto que ambas as notícias definidas estão corretas a nível sintático e semântico, contendo a primeira todos os campos possíveis preenchidos e a segunda apenas os de preenchimento obrigatório (\texttt{TITLE}, \texttt{BODY} e \texttt{DATE}).
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    NEWS:
+    
+    TITLE: 'Banda Filarmónica da UM'
+    SUBTITLE: 'Recorde de Concertos Ultrassado'
+    TOPICS: 'Universidade do Minho' , 'concertos'
+    BODY: 'A banda filarmónica da Universidade do Minho bateu este mês o recorde de concertos por ano.'
+    DATE: 2018-12-27
+    AUTHORS: 'D. Barbosa' , 'JC Martins'
+    ;
+    
+    TITLE: 'A melhor Banda Filarmónica'
+    BODY: 'Campeã do Mundial de Bandas Filarmónicas.'
+    DATE: 2018-01-12
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{news\_right.txt} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+No entanto, em alguns casos não é possível adicionar os artigos tal como pretendido. Um exemplo no qual isso acontece é quando ocorrem erros semânticos relativos à data. Exemplificando, não tem muito nexo escrever uma notícia com data posterior ao dia atual. Tal como mencionado previamente, este é um caso cuja verificação está definida na gramática. Seguindo esta lógica, a notícia abaixo (de título \textit{"Banda Filarmónica da UM"}) não poderá ser adicionada antes do dia 27 de março de 2019.
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    NEWS:
+    
+    TITLE: 'Banda Filarmónica da UM'
+    BODY: 'A banda filarmónica da Universidade do Minho bateu este mês o recorde de concertos por ano.'
+    DATE: 2019-03-27
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{news\_wrong.txt} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+Outro caso que não resulta numa correta inserção do artigo, está relacionado com erros sintáticos. No caso, a ausência do preenchimento de campos de natureza \textit{required}, nomeadamente \textit{DATE}.
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    NEWS:
+    
+    TITLE: 'A melhor Banda Filarmónica'
+    BODY: 'Campeã do Mundial de Bandas Filarmónicas.'
+    AUTHORS: 'D. Barbosa' , 'JC Martins'
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{news\_wrong.txt} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+Por fim, outro exemplo de erros sintáticos que impedem o funcionamento correto do processo \textit{Add News By Grammar"} é a troca das posições dos campos na notícia o que impede um reconhecimento adequado da produção. No caso abaixo ilustrado, o campo \texttt{SUBTITLE} que deveria estar imediatamente após o \texttt{TITLE} encontra-se a seguir ao campo \texttt{AUTHORS}, entre outras incoerências.
+\begin{framed}
+\begin{lstlisting}[language=ANTLR]
+    NEWS:
+    
+    TITLE: 'Banda Filarmónica da UM'
+    DATE: 2018-12-27
+    AUTHORS: 'D. Barbosa' , 'JC Martins'
+    SUBTITLE: 'Recorde de Concertos Ultrassado'
+    TOPICS: 'Universidade do Minho' , 'concertos'
+    BODY: 'A banda filarmónica da Universidade do Minho bateu este mês o recorde de concertos por ano.'
+    ;
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{news\_wrong.txt} \textit{da pasta} \texttt{grammars/test\_files}.
+\end{center}
+
+
+\subsection{Interligação entre Gramáticas e Web site}
+
+Tudo isto é possível devido ao \textit{Gradle Build Tool}, um sistema de automação de compilação \textit{open-source} com vários plugins, sendo que o plugin utilizado é o \texttt{java} de forma a gerar código javascript, em vez de código java, a ser utilizado pelo sistema (iBanda) desenvolvido.
+
+\begin{framed}
+\begin{lstlisting}[language=gradle]
+apply plugin: 'java'
+ 
+repositories {
+    jcenter()
+}
+ 
+dependencies {
+    runtime 'org.antlr:antlr4:4.5.2'
+}
+ 
+task generateAgendaParser(type:JavaExec) {
+   main = 'org.antlr.v4.Tool'
+   classpath = sourceSets.main.runtimeClasspath
+   args = ['-Dlanguage=JavaScript', 'agenda.g4', '-o', 'agenda']
+}
+
+task generateNewsParser(type:JavaExec) {
+   main = 'org.antlr.v4.Tool'
+   classpath = sourceSets.main.runtimeClasspath
+   args = ['-Dlanguage=JavaScript', 'news.g4', '-o', 'news']
+}
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Ficheiro} \texttt{build.gradle} \textit{da pasta} \texttt{Grammars}~\cite{AW}.
+\end{center}
+
+Para além disso, já no sistema desenvolvido é usado a package \texttt{antlr4/index} disponível em \textit{JavaScript}, por forma a utilizar o código gerado pelo Gradle. 
+
+O excerto seguinte de código realiza a verificação léxica e sintática do input para o caso da agenda:
+
+\begin{framed}
+\begin{lstlisting}[language=JavaScript]
+var NewsLexer = require('../grammars/news/newsLexer').newsLexer
+var NewsParser = require('../grammars/news/newsParser').newsParser
+var NewsListener = require('../grammars/news/newsListener').newsListener
+
+.
+.
+.
+
+//recebe o input e transforma-o num tipo reconhecido pelo antlr4
+var chars = new antlr4.InputStream(req.body.grammar);
+//cria o lexer a usar, a partir do código gerado pelo gradle
+var lexer = new AgendaLexer(chars);
+var tokens  = new antlr4.CommonTokenStream(lexer);
+//cria o parser a usar, a partir do código gerado pelo gradle
+var parser = new AgendaParser(tokens);
+
+//variável que irá guardar os erros léxicos gerados pela gramática
+var log = []
+
+//trocado o console.error por forma a capturar os erros gerados pelo analisador léxico
+var exLogError = console.error
+console.error = function(msg) {
+    log.push(msg)
+}
+
+parser.buildParseTrees = true;   
+//cria-se a àrvore ao chamar a regra onde se começa (neste caso começa-se pela regra agenda)
+var tree = parser.agenda();
+//criação do listener
+var agendaListener = new AgendaListener();
+//é percorrida a árvore criada com o listener associado (no listener podia ser associado código à entrada e à saída das regras, o listener usado é o default que não possui nenhum código nessas fases)
+antlr4.tree.ParseTreeWalker.DEFAULT.walk(agendaListener, tree);
+
+//reset do console.error
+console.error = exLogError
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Exemplo de Interligação para a Agenda entre o código gerado pelo ANTLR a partir da gramática produzida e o sistema desenvolvido.}~\cite{AMT,MA,DOCA}
+\end{center}
+
+De forma a obter o que foi construído pelo parser, existem dois atributos sintetizados na regra inicial a partir dos quais é possível obter os artigos (\verb|var val|) e os erros (\verb|var errors|). Estes atributos são acessíveis após percorrer a árvore fazendo \verb|tree.val| para obter \verb|val| e \verb|tree.errors| para obter o \verb|errors|.
+
+Tendo isto em conta, caso hajam erros quer léxicos (\verb|var log|) quer sintáticos (\verb|var errors|), serão apresentados ao user. Caso não hajam erros, são inseridos na base de dados os eventos.
+
+Para as \textit{news} é feito de forma semelhante, mudando apenas o facto de que em vez de se usarem os lexer's, parser's e listener's do \texttt{agenda} usa-se do news, bem como a regra inicial que é \verb|newspaper| em vez de \verb|agenda|.

@@ -1,0 +1,221 @@
+\newpage
+\section{Gramática da Agenda} \label{GAg}
+
+\begin{lstlisting}[language=ANTLR]
+grammar agenda;
+
+agenda returns [var val, var errors]
+@init {
+     $val = []
+     $errors = []
+}   
+     : 'AGENDA:' (
+		event {
+ 				if($event.error!="") $errors.push($event.error);
+				else $val.push($event.val);
+               } ';'
+	)+;
+
+event returns[var val, var error]
+@init {
+     var existsDesc = false
+     var existsLocal = false
+}
+	: title (desc {existsDesc=true})? (local {existsLocal=true})? time 
+     {    
+          if($time.ts.sdate>$time.te.edate){
+               $val = ""
+               $error = "Start date after end date on \"" + $title.val + "\" event!"
+          }else{
+               if ($time.ts.sdate==$time.te.edate && $time.ts.shour>$time.te.ehour ){
+                    $val = ""
+                    $error = "Start hour after end hour on \"" + $title.val + "\" event!"     
+               }else {
+                    $val = {
+                         title: $title.val,
+                         startDate: $time.ts.sdate,
+                         startHour: $time.ts.shour,
+                         endDate: $time.te.edate,
+                         endHour: $time.te.ehour
+                    }
+                    if (existsDesc) $val.desc = $desc.val
+                    else $val.desc = ""
+                    if (existsLocal) $val.local = $local.val
+                    else $val.local = ""
+                    $error = ""
+               }
+          }
+     }
+     ;
+
+title returns[var val]
+     : 'TITLE:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
+
+desc returns[var val]
+	: 'DESC:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
+
+local returns[var val]
+	: 'LOCAL:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)};
+
+time returns[var ts, var te]
+     : s = start e = end 
+     {
+          $ts = {
+               sdate: $s.sd,
+               shour: $s.sh
+          }
+          $te = {
+               edate: $e.ed,
+               ehour: $e.eh
+          }
+     };
+
+start returns[var sd, var sh]
+	: 'BEGINS:' d = startDate h = startHour 
+     {
+          $sd = $d.val
+          $sh = $h.val
+     };
+
+end returns[var ed, var eh]
+	: 'ENDS:' d = endDate h = endHour 
+     {
+          $ed = $d.val
+          $eh = $h.val
+     };
+
+startDate returns[var val]: DATE {$val = $DATE.text};
+
+startHour returns[var val]: HOUR {$val = $HOUR.text};
+
+endDate returns[var val]: DATE {$val = $DATE.text};
+
+endHour returns[var val]: HOUR {$val = $HOUR.text};
+
+/* Definição do Analisador Léxico */
+TEXT: (['"] ~(['"])* ['"]);
+
+fragment DIGIT: [0-9];
+
+DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT;
+
+HOUR: DIGIT DIGIT ':' DIGIT DIGIT;
+
+Separator: ( '\r'? '\n' | ' ' | '\t')+ -> skip; 
+\end{lstlisting}
+
+\newpage
+\section{Gramática das News} \label{GN}
+
+\begin{lstlisting}[language=ANTLR]
+grammar news;
+
+newspaper returns [var val, var errors]
+@init{
+	$val = []
+	$errors = []
+}
+		 :'NEWS:' (news {
+			 if($news.error!="") $errors.push($news.error);
+			 else $val.push($news.val);
+		 } ';')+
+		 ;
+
+news returns [var val, var error]
+@init{
+	function today(){
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth() + 1; //January is 0!
+		var yyyy = today.getFullYear();
+
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+
+		if (mm < 10) {
+			mm = '0' + mm;
+		}
+
+		today = yyyy + '-' + mm + '-' + dd;
+		return today;
+	}
+	var existTopics = false
+	var existAuthors = false
+}
+	: titles (topics {existTopics = true})? body date (authors {existAuthors = true})?
+	{
+		if(today()>=$date.val){
+			$val = {
+				title: $titles.titleOut,
+				subtitle: $titles.subtitle,
+				body: $body.val,
+				date: $date.val
+			}
+			if(existTopics) $val.topics = $topics.val
+			else $val.topics = []
+			if(existAuthors) $val.authors = $authors.val
+			else $val.authors = []
+			$error = ""
+		}else{
+			$val = ""
+			$error = "Date is in the future on \"" + $titles.titleOut + "\" article!"
+		}
+	}
+    ;
+
+titles returns [var titleOut, var subtitle]
+@init{
+	var subExists = false
+}
+		: 'TITLE:' t=title ('SUBTITLE:' s=title {subExists = true})?
+		{
+			$titleOut = $t.val
+			if(subExists) $subtitle = $s.val
+			else $subtitle = ""
+		}
+		;
+
+title returns [var val]
+	: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+	;
+
+topics returns [var val]
+@init{
+	$val = []
+}
+		: 'TOPICS:' t1=topic {$val.push($t1.val)} (',' t2=topic {$val.push($t2.val)})*
+		;
+
+topic returns [var val]
+		: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+		;
+
+body returns [var val]
+	: 'BODY:' TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+	;
+
+date returns [var val]
+	: 'DATE:' DATE {$val = $DATE.text}
+	;
+
+authors returns [var val]
+@init{
+	$val = []
+}
+		: 'AUTHORS:' a1=author {$val.push($a1.val)} (',' a2=author {$val.push($a2.val)})*
+	   ;
+
+author returns [var val]
+		: TEXT {$val = $TEXT.text.substring(1, $TEXT.text.length-1)}
+		;
+
+/* Definição do Analisador Léxico */         
+TEXT: (['"] ~(['"])* ['"]);
+
+fragment DIGIT: [0-9];
+
+DATE: DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT;
+
+Separator: ( '\r'? '\n' | ' ' | '\t' )+  -> skip; 
+\end{lstlisting}

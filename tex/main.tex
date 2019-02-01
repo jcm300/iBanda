@@ -1,0 +1,118 @@
+\documentclass{article} 
+\usepackage[utf8]{inputenc} 
+\usepackage[portuguese]{babel}
+\usepackage[a4paper, total={6.5in, 9in}]{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{verbatim} 
+\usepackage{caption} 
+\usepackage{import} 
+\usepackage[hidelinks]{hyperref} 
+\usepackage{framed}
+\usepackage{listings}
+\usepackage[style=numeric]{biblatex}
+\usepackage{csquotes}
+\usepackage{xcolor}
+
+\addbibresource{references.bib}
+
+\lstdefinelanguage{JavaScript}{
+    keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with},
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]',
+    morestring=[b]",
+    ndkeywords={class, export, boolean, throw, implements, import, this},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywordstyle=\color{green}\bfseries,
+    identifierstyle=\color{black},
+    commentstyle=\color{teal}\ttfamily,
+    stringstyle=\color{orange}\ttfamily,
+    sensitive=true
+}
+
+\lstdefinelanguage{gradle}{
+    keywords={dependencies, apply, repositories, task, JavaExec},
+    keywordstyle=\color{teal}\bfseries,
+    morestring=[b]',
+    morestring=[b]",
+    stringstyle=\color{orange}\ttfamily,
+    sensitive=true
+}
+
+\lstdefinelanguage{pug}{
+    keywords={doctype, html, head, title, link, script, block, body, var, extends, address, footer, header},
+    ndkeywords={rel, href, url, scripts, content, src, type, layout},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywordstyle=\color{cyan}\bfseries,
+    morestring=[b]',
+    morestring=[b]",
+    stringstyle=\color{orange}\ttfamily,
+    sensitive=true
+}
+
+\lstdefinelanguage{ANTLR}{
+    keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with, returns, grammar},
+    keywordstyle=\color{blue}\bfseries,
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    moredelim=[s][\color{magenta}\ttfamily]{'}{'},
+    moredelim=[s][\color{magenta}\ttfamily]{"}{"},
+    commentstyle={\color{gray}\itshape},
+    morecomment=[l]{//},
+    alsoletter={:,|,;},
+    morekeywords={:,|,;}
+}
+
+\lstset{
+    language=JavaScript,
+    extendedchars=true,
+    basicstyle=\footnotesize\ttfamily,
+    showstringspaces=false,
+    showspaces=false,
+    numbersep=9pt,
+    tabsize=2,
+    breaklines=true,
+    showtabs=false,
+    captionpos=b
+}
+
+\begin{document}
+% ----- CAPA + ABSTRACT + INTRODUÇÃO + ÍNDICE ------
+\import{chapters/}{00_capa.tex} \newpage
+\import{chapters/}{00_abstract.tex} \tableofcontents \newpage 
+\import{chapters/}{01_introducao.tex}
+
+%--- MODELS ------
+\import{chapters/}{02_models.tex}
+
+%--- CONTROLLERS ------
+\import{chapters/}{03_controllers.tex}
+
+%---- ROUTERS ------
+\import{chapters/}{04_routes.tex}
+
+%--- VIEWS -----
+\import{chapters/}{05_views.tex}
+
+%--- LOCALIZAÇÃO FICHEIROS -----
+\import{chapters/}{06_localFicheiros.tex}
+
+%--- GRAMÁTICAS -----
+\import{chapters/}{07_gramaticas.tex}
+
+%--- INSTALAÇÃO ----
+\import{chapters/}{08_instalacao.tex}
+
+%--- CONCLUSÕES ----
+\import{chapters/}{09_conclusoes.tex}
+
+%--- Referências ----
+\printbibliography
+
+%------------- APÊNDICE ------------
+\appendix
+\import{chapters/}{10_apendice.tex}
+
+\end{document}

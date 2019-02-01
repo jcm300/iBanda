@@ -1,0 +1,428 @@
+\section{Routes}\label{c:routes}
+
+\subsection{API}
+A \texttt{API} permite que pedidos do cliente possam realizar a chamada de funções (necessárias à sua execução) definidas nos \texttt{Controllers}, desde que este esteja autenticado e possua permissões para tal chamada, consoante o \texttt{URL} e o método do pedido.
+De seguida, apresentam-se as rotas e a função que é chamada para cada rota.
+
+\paragraph{Article: /api/article concatenado com:} 
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /date/:date - getArticlesByDate
+                    \item /author/:author - getArticlesByAuthor
+                    \item /topic/:topic - getArticlesByTopic
+                    \item /:id - getArticle
+                    \item / - list
+                \end{itemize}
+            \item método \texttt{POST}
+                \begin{itemize}
+                    \item /insertMany - insertMany
+                    \item / - createArticle
+                \end{itemize}
+            \item método \texttt{PUT}
+                \begin{itemize}
+                    \item /visible/:id - changeVisibility
+                    \item /:id - updateArticle
+                \end{itemize}
+            \item método \texttt{DELETE}
+                \begin{itemize}
+                    \item /:id - deleteArticle
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{Entry: /api/entry concatenado com:}
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /:id - getEntry
+                    \item / - list
+                \end{itemize}
+            \item método \texttt{POST}
+                \begin{itemize}
+                    \item / - createEntry
+                \end{itemize}
+            \item método \texttt{PUT}
+                \begin{itemize}
+                    \item /:id - updateEntry
+                \end{itemize}
+            \item método \texttt{DELETE}
+                \begin{itemize}
+                    \item /:id - deleteEntry
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{Event: /api/event concatenado com:}
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /date/:date - getEventsByDate
+                    \item /hour/:hour - getEventsByHour
+                    \item /date\_hour?date=:date\&hour=:hour - getEventsByDateHour
+                    \item /local/:local - getEventsByLocal
+                    \item /:id - getEvent
+                    \item / - list
+                \end{itemize}
+            \item método \texttt{POST}
+                \begin{itemize}
+                    \item /insertMany - insertMany
+                    \item / - createEvent
+                \end{itemize}
+            \item método \texttt{PUT}
+                \begin{itemize}
+                    \item /:id - updateEvent
+                \end{itemize}
+            \item método \texttt{DELETE}
+                \begin{itemize}
+                    \item /:id - deleteEvent
+                \end{itemize}
+        \end{itemize}    
+
+\paragraph{Piece: /api/piece concatenado com:}
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /:id - getPiece
+                    \item / - list
+                \end{itemize}
+            \item método \texttt{POST}
+                \begin{itemize}
+                    \item /addInst/:id - addInst
+                    \item / - createPiece
+                \end{itemize}
+            \item método \texttt{PUT}
+                \begin{itemize}
+                    \item /updInst?idP=idPiece\&idI=idInst - updateInst
+                    \item /:id - updatePiece
+                \end{itemize}
+            \item método \texttt{DELETE}
+                \begin{itemize}
+                    \item /remInst?idP=idPiece\&idI=idInst - remInst
+                    \item /:id - deletePiece
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{Statistic: /api/statistic concatenado com:}
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /views/most/:id - getPieceViews
+                    \item /downloads/most/:id - getPieceDownloads
+                    \item /views/:id - getViews
+                    \item /downloads/:id - getDownloads
+                    \item /viewsAll - getAllViews
+                    \item /downloadsAll - getAllDownloads
+                    \item /viewsMostUser - getUserWithMostViews
+                    \item /downloadsMostUser - getUserWithMostDownloads
+                    \item /viewsMost - getMostViewed
+                    \item /downloadsMost - getMostDownloaded
+                    \item /usersViews - getUsersViews
+                    \item /usersDownloads - getUsersDownloads
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{User: /api/user concatenado com:}
+        \begin{itemize}
+            \item método \texttt{GET}
+                \begin{itemize}
+                    \item /approve/:id - approve
+                    \item /:id - getUser
+                    \item / - list
+                \end{itemize}
+            \item método \texttt{POST}
+                \begin{itemize}
+                    \item / - createUser
+                \end{itemize}
+            \item método \texttt{PUT}
+                \begin{itemize}
+                    \item /views/:id - updateViews
+                    \item /downloads/:id - updateDownloads
+                    \item /deleteStat - deleteStat
+                    \item /updPass/:id - updatePassword
+                    \item /:id - updateUser
+                \end{itemize}
+            \item método \texttt{DELETE}
+                \begin{itemize}
+                    \item /:id - deleteUser
+                \end{itemize}
+        \end{itemize}
+
+\subsection{Routers visíveis externamente}
+Na maioria dos casos as rotas fazem um pedido à API e com os dados obtidos renderizam uma vista. Contudo, há outras rotas que realizam outras tarefas, bem como diversos pedidos à API. Abaixo, exemplificamos as rotas acessíveis e, de forma sucinta, as suas funções:
+
+\paragraph{/articles concatenado com:} 
+\begin{itemize}
+    \item Método \texttt{GET:}
+        \begin{itemize}
+            \item /authors/:author - Obtém os artigos com autor ``author'' e apresenta-os numa lista
+            \item /topics/:topic - Obtém os artigos com o tópico ``topic'' e apresenta-os numa lista
+            \item /article/:id - Obtém o artigo e apresenta um formulário com os valores armazenados de forma a o utilizador editar
+            \item /list/:date - Obtém os artigos com a data igual a ``date'' e apresenta-os (neste caso apenas é gerado os li's sendo depois concatenado com o html via jquery)
+            \item /list - Obtém todos os artigos e apresenta-os (neste caso apenas é gerado os li's sendo depois concatenado com o html via jquery)
+            \item /grammar - Apresenta ao utilizador um formulário de forma a poder escrever texto que respeite a gramática definida, apresentando os erros quando o mesmo não respeita, e quando o mesmo respeitar pedir a inserção na base de dados dos artigos presentes no texto
+            \item /article - Apresenta ao utilizador o formulário para a inserção de um artigo
+            \item /:id - Obtém o artigo com ``id'' e apresenta a sua informação ao utilizador
+            \item / - Apresenta todos os artigos/menu principal dos artigos ao utilizador
+        \end{itemize}
+    \item Método \texttt{POST:}
+        \begin{itemize}
+            \item /grammar - É para aqui enviado o texto referente ao formulário da gramática, sendo aqui feito o parse do mesmo e em caso de erro volta à página do formulário, em caso de sucesso pede a inserção dos artigos na base de dados e em caso de sucesso o utilizador é redirecionado para /articles
+            \item / - Recebe os valores referentes ao formulário da inserção de um artigo e em caso de sucesso redireciona para /articles
+        \end{itemize}
+    \item Método \texttt{PUT:}
+        \begin{itemize}
+            \item /visible/:id - Recebe o pedido de tornar visível ou invisível um artigo, em caso de sucesso redireciona para o artigo alterado
+            \item /:id - Recebe os valores do formulário de edição de um artigo, faz o pedido de alteração à API e em caso de sucesso redireciona para o artigo alterado
+        \end{itemize}
+\end{itemize}
+
+\paragraph{/entries concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /entry/:id - Obtém a entrada e apresenta um formulário com os valores armazenados de forma a o utilizador editar
+                    \item /entry - Apresenta ao utilizador o formulário para a inserção de uma entrada na biblioteca de suporte
+                    \item /:id - Obtém a entrada com ``id'' e apresenta a sua informação ao utilizador
+                    \item / - Apresenta todas as entradas/menu principal das entradas ao utilizador
+                \end{itemize}
+            \item Método \texttt{POST:}
+                \begin{itemize}
+                    \item / - Recebe os valores referentes ao formulário da inserção de uma entrada, verifica se o ficheiro é um pdf, em caso afirmativo pede a inserção de informação na base de dados e se houver sucesso move o ficheiro para /public/pdfs/ e em caso de sucesso redireciona para /entries
+                \end{itemize}
+            \item Método \texttt{PUT:}
+                \begin{itemize}
+                    \item /:id - Recebe os valores referentes ao formulário de edição de uma entrada. Caso seja inserido um ficheiro, é atualizado esse ficheiro (caso seja um pdf) bem como a informação alterada. Caso não seja inserido um ficheiro, apenas é alterada a informação presente na base de dados
+                \end{itemize}
+            \item Método \texttt{DELETE:}
+                \begin{itemize}
+                    \item /:id -  Pede a eliminação da entrada na base de dados e em caso de sucesso, elimina o ficheiro armazenado, redirecionando para /entries
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{/events concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /event/:id - Obtém o evento e apresenta um formulário com os valores armazenados de forma a o utilizador editar
+                    \item /list/:date - Obtém os eventos que se realizam/estão a ser realizados em ``date'' e apresenta-os (neste caso apenas é gerado os li's sendo depois concatenado com o html via jquery)
+                    \item /list - Obtém todos os eventos e apresenta-os (neste caso apenas é gerado os li's sendo depois concatenado com o html via jquery)
+                    \item /grammar - Apresenta ao utilizador um formulário de forma a poder escrever texto que respeite a gramática definida, apresentado os erros quando o mesmo não respeita, e quando o mesmo respeitar pedir a inserção na base de dados dos eventos presentes no texto
+                    \item /event - Apresenta ao utilizador o formulário para a inserção de um evento
+                    \item /export - Exportação de todos os eventos num ficheiro em formato json
+                    \item /:id - Obtém o evento com ``id'' e apresenta a sua informação ao utilizador
+                    \item / - Apresenta todos os eventos/menu principal dos eventos ao utilizador
+                \end{itemize}
+            \item Método \texttt{POST:}
+                \begin{itemize}
+                    \item /grammar - É para aqui enviado o texto referente ao formulário da gramática, sendo aqui feito o parse do mesmo e em caso de erro volta à página do formulário, em caso de sucesso pede a inserção dos eventos na base de dados e em caso de sucesso o utilizador é redirecionado para /events
+                    \item / - Recebe os valores referentes ao formulário da inserção de um evento e em caso de sucesso redireciona para /events
+                \end{itemize}
+            \item Método \texttt{PUT:}
+                \begin{itemize}
+                    \item /:id - Recebe os valores do formulário de edição de um evento, faz o pedido de alteração à API e em caso de sucesso redireciona para o evento alterado
+                \end{itemize}
+            \item Método \texttt{DELETE:}
+                \begin{itemize}
+                    \item /:id -  Pede a eliminação do evento na base de dados e em caso de sucesso redireciona para /events
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{/pieces concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /ingestion - apresenta o formulário para a inserção do ficheiro zip para ingestão do mesmo
+                    \item /addInst/:id - apresenta o formulário para a inserção de um instrumento para a obra ``id''
+                    \item /updInst?idP=idPiece\&idI=idInst - Obtém os valores do instrumento ``idInst'' e apresenta-os num formulário de forma a o utilizador editar (deve ser usado para atualizar o ficheiro associado a um instrumento)
+                    \item /export/:id - realiza a exportação da obra com id ``id'', gera o iBanda-SIP.json obtendo o piece da base de dados e apagando os \_id's presentes, cria o zip com este ficheiro e os ficheiros armazenados desta obra e por fim envia o zip ao utilizador
+                    \item /piece/:id - Obtém a obra e apresenta um formulário com os valores armazenados de forma a o utilizador editar
+                    \item /:id - Obtém a obra com ``id'' e apresenta a sua informação ao utilizador
+                    \item / - Apresenta todas as obras/menu principal das obras ao utilizador
+                \end{itemize}
+            \item Método \texttt{POST:}
+                \begin{itemize}
+                    \item /addInst/:id - recebe os valores do formulário de adição de um novo instrumento, verificando se o ficheiro é um pdf, verifica se não existe na obra outro ficheiro com o mesmo nome, se sim usa o id do instrumento como nome, guarda o ficheiro e por fim pede a inserção do instrumento na base de dados
+                    \item / - É aqui ingerido o ficheiro zip, verificado se é mesmo um ficheiro zip, verificado se o manifesto existe, se os ficheiros que referencia estão no zip, pede a inserção da informação presente no manifesto na base de dados e em caso de sucesso extrai os ficheiros referenciados para o sistema
+                \end{itemize}
+            \item Método \texttt{PUT:}
+                \begin{itemize}
+                    \item /updInst?idP=idPiece\&idI=idInst - Recebe os valores do formulário de edição de um instrumento, verifica se o ficheiro é um pdf, elimina o ficheiro que estava associado ao instrumento, verifica se não existe na obra outro ficheiro com o mesmo nome que o novo ficheiro, se sim usa o id do instrumento como nome, guarda o novo ficheiro, faz o pedido de alteração à API e em caso de sucesso redireciona para a obra alterada
+                    \item /:id - Recebe os valores do formulário de edição de uma obra, faz o pedido de alteração à API e em caso de sucesso redireciona para a obra alterada
+                \end{itemize}
+            \item Método \texttt{DELETE:}
+                \begin{itemize}
+                    \item /remInst?idP=idPiece\&idI=idInst - pede a remoção do instrumento da base de dados e, em caso de sucesso, elimina o ficheiro que lhe estava associado
+                    \item /:id - Pede a eliminação da obra na base de dados, elimina os ficheiros referentes a essa obra e, em caso de sucesso redireciona para /pieces
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{/statistics concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /:id - Obtém várias estatísticas do utilizador com ``id'' e apresenta-as ao utilizador
+                    \item / - Obtém todos os utilizadores, bem como algumas das suas estatísticas, para além de algumas estatísticas globais ao sistema e apresenta-as ao utilizador
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{/users concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /approve/:id - Recebe o id de uma conta e tenta aprová-la, redireciona para a página com a informação da conta (/users/:id)
+                    \item /user/:id - Obtém o utilizador e apresenta um formulário com os valores armazenados de forma a o utilizador editar
+                    \item /user - Apresenta ao utilizador o formulário para se registar
+                    \item /updPass/:id - Apresenta ao utilizador o formulário para atualizar a password do utilizador
+                    \item /:id - Obtém o utilizador com ``id'' e apresenta a sua informação ao utilizador
+                    \item / - Apresenta todos os utilizadores/menu principal dos utilizadores ao utilizador
+                \end{itemize}
+            \item Método \texttt{POST:}
+                \begin{itemize}
+                    \item Recebe os valores referentes ao formulário do registo de um utilizador, caso o utilizador seja criado com sucesso, redireciona para o login (/)
+                \end{itemize}
+            \item Método \texttt{PUT:}
+                \begin{itemize}
+                    \item /updPass/:id - Recebe os valores do formulário de atualização de password do utilizador, verifica se é o utilizador da sessão a fazer o pedido, faz o pedido de alteração à API e em caso de sucesso redireciona para o menu principal
+                    \item /:id - Recebe os valores do formulário de edição de um utilizador, faz o pedido de alteração à API e em caso de sucesso redireciona para o user alterado, apaga todas as sessões do user com id ``id'' de forma a garantir que o utilizador ``id'' tem as permissões logo atualizadas
+                \end{itemize}
+            \item Método \texttt{DELETE:}
+                \begin{itemize}
+                    \item /:id -  Pede a eliminação de um utilizador na base de dados e em caso de sucesso redireciona para /users, apaga as sessões do user id ``id'' de forma a garantir que durante o tempo até à expiração do token ele já não tenha acesso
+                \end{itemize}
+        \end{itemize}
+
+\paragraph{/(index) concatenado com:}
+        \begin{itemize}
+            \item Método \texttt{GET:}
+                \begin{itemize}
+                    \item /main - Área principal de um utilizador, obtém os artigos e apresenta-os ao utilizador. Permite navegar pelas várias zonas a que o utilizador tem acesso
+                    \item /logout - Realiza o logout do utilizador, ao apagar a sua sessão(token) do sistema. Redireciona para a área de login
+                    \item / - Apresenta um formulário para a realização do login 
+                \end{itemize}
+            \item Método \texttt{POST:}
+                \begin{itemize}
+                    \item /login - Recebe os valores do formulário de login, verifica se o utilizador existe, se a conta já foi aprovada pelo administrador, bem como se a password é a correta e cria por fim o token, armazenando na sessão o token bem como o seu \_id e permissões do mesmo, por fim, em caso de sucesso, redireciona para a sua área principal
+                \end{itemize}
+        \end{itemize}
+
+
+\subsubsection{Ingestão}
+Para que o SIP (\textit{Submission Information Package}) seja aceite pelo sistema, este deve estar de acordo com as seguintes regras:
+\begin{itemize}
+    \item Ser um ficheiro em formato zip
+    \item O manifesto (iBanda-SIP.json) tem de estar na raiz do ficheiro zip
+    \item O nome do manifesto tem de ser iBanda-SIP.json
+    \item Os restantes ficheiros estão ao nível do manifesto ou em pastas (estando estas ao nível do manifesto) no ficheiro zip
+    \item O manifesto tem que respeitar a sintaxe do JSON.
+    \item O manifesto tem que possuir os seguintes atributos:
+        \begin{itemize}
+            \item title
+            \item type
+            \item composer (opcional)
+            \item arrangement (opcional)
+            \item instruments (pelo menos um instrumento):
+            \begin{itemize}
+               \item name
+               \item score
+                    \begin{itemize}
+                        \item voice (opcional)
+                        \item clave (opcional)
+                        \item tune (opcional)
+                        \item path (não deve incluir ``./'' nem ``$\sim{}$/'' nem ``/'' no inicio do caminho porque, este caminho deve ser o caminho do ficheiro dentro do zip e não no sistema de ficheiros)
+                    \end{itemize}
+                \end{itemize}
+            \end{itemize}
+    \item Os ficheiros indicados no manifesto têm que existir no ficheiro zip. Caso não existam, o SIP não é importado para o sistema.
+    \item Apenas são extraídos para o sistema os ficheiros definidos no manifesto.
+\end{itemize}
+
+\begin{lstlisting}[frame=single,
+                   framesep=3mm,
+                   xleftmargin=21pt,
+                   tabsize=4]{js}
+    {
+        "title": "musica",
+        
+        "type": "concerto",
+        
+        "instruments": [
+            {"name": "instrumento",
+             "score": {
+                "path": "score/score.txt"
+             }
+            }
+        ]
+    }
+\end{lstlisting}
+\begin{center}
+\textit{Exemplo de um manifesto básico (assumindo que o seu nome é} \texttt{iBanda-SIP.json} \textit{e que o ficheiro} \texttt{score.txt} \textit{está numa pasta ``score'' dentro do ficheiro zip).}
+\end{center}
+
+Por forma a importar o DataSet fornecido pelo professor, foi criado um script (\textit{convertAndImport.sh}) que recebe como argumento os ficheiros a importar, converte-os para um estado suportado pelo sistema desenvolvido e, no fim, faz a importação dos mesmos para o \texttt{mongoDB}. A conversão consiste em passar os nomes dos atributos para inglês (os que são usados no sistema) e na eliminação do \texttt{\_id} de forma a ser criado um pelo \texttt{mongoDB}. Contudo, como este DataSet não inclui os ficheiros associados aos caminhos(path), nestas obras no sistema não é possível, obviamente, visualizar tais ficheiros. É também, após a importação, adicionado um \texttt{\_id} a cada instrumento em cada documento, de maneira que seja possível a atualização de cada instrumento e, como tal, caso os ficheiros sejam adicionados na pasta \verb|public/scores/{_id da obra}/| e tenham os mesmos nomes que está no path da obra, então passarão a estar acessíveis para os utilizadores. 
+Portanto, para importar, basta \verb|./convertAndImport.sh <caminhoFicheiro1> <caminhoFicheiro2> ...|. Por forma a associar os ficheiros a estes instrumentos sem ficheiros, pode também ser usado a interface de atualização de instrumentos do sistema.
+
+\begin{framed}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+
+#Convert attribute names to english ones
+sed -i '/\"_id\"[^\n]*/d' "$@"
+sed -i "s/titulo/title/" "$@"
+sed -i "s/tipo/type/" "$@"
+sed -i "s/compositor/composer/" "$@"
+sed -i "s/instrumentos/instruments/" "$@"
+sed -i "s/arranjo/arrangement/" "$@"
+sed -i "s/nome/name/g" "$@"
+sed -i "s/partitura/score/g" "$@"
+sed -i "s/voz/voice/g" "$@"
+sed -i "s/afinacao/tune/g" "$@"
+
+#Import files to mongoDB
+for f in $* 
+do
+    mongoimport -d iBanda -c pieces --file "$f"
+done
+
+#Create _id for instruments necessary to update them on system
+mongo iBanda --eval 'db.pieces.find().forEach(function(doc) {
+    for (var i = 0; i < doc.instruments.length; i++) {
+        doc.instruments[i]._id = ObjectId()
+    }
+    db.pieces.update({ "_id" : doc._id }, doc)
+})'
+\end{lstlisting}
+\end{framed}
+\begin{center}
+\textit{Script convertAndImport.sh}
+\end{center}
+
+\subsubsection{Administração}
+A administração do sistema é a gestão interna de todos os tipos de objetos/documentos presentes desde obras, a eventos, a utilizadores, etc. Esta gestão compreende, a adição, edição e remoção destes documentos bem como a visualização de estatísticas referentes ao sistema.
+
+Como já apresentado anteriormente estas funcionalidades estão presentes no sistema, nomeadamente nos routers pieces e statistics, sendo que o administrador apenas não pode inserir obras e utilizadores.
+
+\subsubsection{Disseminação}
+Quanto à disseminação qualquer utilizador autenticado tem acesso à mesma, sendo que cada obra pode ser exportada para um ZIP ou visualizada por uma interface. O ficheiro ZIP exportado possui a mesma estrutura de um SIP, visto possuir um iBanda-SIP.json com os metadados que estavam armazenados na base de dados (sendo que são apagados os vários \_id's por forma a não estarem incluídos no json criado) e os ficheiros que são referenciados pela obra.
+
+\subsubsection{Biblioteca de suporte}
+A biblioteca de suporte consiste de um conjunto de ficheiros PDF com um campo descritivo associado (por exemplo, "\textit{25 estudos para flauta de X}"). De modo a suportar tal biblioteca, a descrição contida em cada um dos ficheiros é armazenada na base de dados (na coleção \textit{entries}). Já os PDFs são armazenados na pasta pasta \texttt{pdfs} pertencente à \texttt{public.} Estes, são guardados com o nome igual ao seu identificador da entrada na base de dados de modo a garantir que não há nomes repetidos e portanto, não há erros desse tipo no processo de armazenamento.
+
+
+\subsection{Autenticação e Permissões}
+De modo a assegurar a autenticação dos utilizadores, o sistema recorre ao package \texttt{passport} em conjunto com o \texttt{JWT (tokens)}.
+O \texttt{admin}, caso este não exista na base de dados, será criado um ao executar o sistema (com \texttt{email root@root} e \texttt{password ''ibanda''}).
+Desta forma, quando um \texttt{user} efetua o \textit{login}, é criado um \texttt{token} que lhe permite passar pelas áreas protegidas do sistema. 
+
+O token tem um tempo de expiração de 30 minutos. Na eventualidade de isso ocorrer, o utilizador necessita de reefetuar o login, o que corresponde à criação de um novo token e consequente armazenamento do mesmo na sessão do user. É ainda armazenado o seu tipo (de utilizador) nomeadamente as permissões que possui e o seu \texttt{\_id} na sessão. A criação/validação do token é feita usando uma chave privada (para o criar) e uma pública (para o validar).
+
+Por forma a restringir os utilizadores consoante o seu nível de permissões, isto é, permitir ou não o acesso sempre que este é pedido, o sistema recorre ao valor \textit{type} do utilizador armazenado na sessão para tomar essa decisão. Este valor também permite às \texttt{views} apresentarem o conteúdo adequado consoante o tipo de utilizador. Já a presença do \_id na sessão tem como objetivo impedir que alguém tente alterar a password de outro utilizador, sendo assim, é apenas permitido que altere a sua password e apenas caso se lembre da atual.
+
+O token é verificado em todas as rotas (as rotas debaixo da pasta public que sejam para a pasta scores, javascripts e pdfs também estão protegidas), exceto no acesso ao login (\texttt{GET}) e no registo(GET's e POST's) sendo a função \texttt{isAuthenticated} responsável por perceber se o utilizador está autenticado (através do token). Já a função \texttt{havePermissions} tem como objetivo perceber se o utilizador tem permissões para aquela rota. Tanto as rotas visíveis ao utilizador como a API estão protegidas por estas duas funções, sendo que no caso em que é usado o \texttt{axios} para fazer pedidos internos, é-lhe passado o \texttt{cookie} enviado pelo utilizador, garantindo assim que é possível usar a API e que todas as rotas estão protegidas.
+
+\bigskip Quanto aos níveis dos utilizadores, o sistema apresenta três:
+\begin{itemize}
+    \item Nível 1 (\textbf{Administrador}): Tem acesso a quase tudo (GETs, \texttt{POST}s, \texttt{PUT}s e \texttt{DELETE}s) sendo que a única coisa que não pode fazer é POST de obras e de utilizadores visto cada pessoa realizar o seu registo.
+    \item Nível 2 (\textbf{Produtor}): Tem acesso a GETs de tudo exceto de utilizadores e pode fazer POSTs de obras, e POSTs, PUTs e DELETEs de instrumentos nas obras.
+    \item Nível 3 (\textbf{Consumidor}): Tem a acesso a GETs de tudo exceto de utilizadores.
+\end{itemize}
+
+Contudo, os utilizadores que não possuam qualquer nível de permissão, ou seja não estejam registados, podem-se registar sendo que só terão acesso ao sistema assim que o administrador aprovar o registo. É também importante referir que caso um utilizador autenticado tente efetuar outro login ou registo, não lhe é permitido sendo redirecionado para a área principal do utilizador. Este redirecionamento é garantido pela função \texttt{authenticated} que verifica se o utilizador está autenticado.

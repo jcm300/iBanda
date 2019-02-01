@@ -1,0 +1,89 @@
+\section{Models}\label{c:models}
+ 
+É nos \texttt{Models} que se encontra definido o \textit{schema} da base de dados da aplicação, nomeadamente, as coleções de documentos em \texttt{MongoDB} (BD não relacional). Cada ficheiro \texttt{.js} corresponde a uma coleção, sendo que cada \texttt{schema} permite definir a estrutura de cada tipo de documento. 
+
+\begin{framed}
+\begin{lstlisting}[language=JavaScript]
+	    var mongoose = require("mongoose")
+	    var Schema = mongoose.Schema
+
+	    var EntrySchema = new Schema(
+	        {
+	         desc: {type: String, required: true}
+	        }
+	    )
+
+	    module.exports = mongoose.model("Entry",EntrySchema,"entries")
+\end{lstlisting}
+\end{framed}
+
+\begin{center}
+\textit{Ficheiro} \texttt{entry.js} \textit{da pasta} \texttt{Models}.
+\end{center}
+
+É de notar que utilizamos os identificadores criados pelo \texttt{MongoDB (\_id)}, em vez de criar um atributo \texttt{id} para cada tipo de documento, sendo os seguintes os documentos definidos:
+
+\paragraph{\textbf{Article:}} define um artigo noticiário e apresenta a seguinte estrutura:
+    \begin{itemize}
+        \item \texttt{title:} String obrigatória que define o título do artigo;
+        \item \texttt{subtitle:} String que define o subtítulo do artigo;
+        \item \texttt{date:} String obrigatória que define a data;
+        \item \texttt{authors:} Lista de Strings, cada uma com o nome de um autor do artigo;
+        \item \texttt{body:} String obrigatória que representa o corpo do artigo;
+        \item \texttt{topics:} Lista de Strings, cada uma com um tópico;
+        \item \texttt{visible:} Valor booleano obrigatório que permite definir se o artigo deve estar visível ou não para os produtores e para os consumidores.
+    \end{itemize}
+
+Na inserção de artigos é verificado se a data é igual ou antecedente ao dia corrente.
+
+\paragraph{\textbf{Entry:}} identifica cada entrada na biblioteca de suporte, apresentando a seguinte estrutura:
+    \begin{itemize}
+        \item \texttt{desc:} String obrigatória que possui a descrição do documento PDF.
+    \end{itemize}
+        
+\paragraph{\textbf{Event:}} identifica cada evento de uma agenda. Apresenta a seguinte estrutura:
+    \begin{itemize}
+        \item \texttt{title:} String obrigatória que representa o título do evento;
+        \item \texttt{desc:} String com a descrição do evento;
+        \item \texttt{local:} String com o local do evento;
+        \item \texttt{startDate:} String obrigatória que possui a data inicial do evento (yyyy-mm-dd);
+        \item \texttt{startHour}: String obrigatória com a hora inicial do evento (hh:mm);
+        \item \texttt{endDate:} String obrigatória com a data final do evento (yyyy-mm-dd);
+        \item \texttt{endHour:} String obrigatória com a hora final do evento (hh:mm).
+    \end{itemize}
+Na inserção de eventos é verificado se a data+hora inicial antecede a data+hora final.
+    
+\paragraph{\textbf{Piece:}} representa parte do AIP de uma obra. É aqui que são guardados todos os meta-dados de uma obra. Apresenta a seguinte estrutura:
+    \begin{itemize}
+        \item \texttt{title:} String obrigatória que representa o título da obra;
+        \item \texttt{composer:} String com o compositor da obra;
+        \item \texttt{type:} String obrigatória que define o tipo da obra;
+        \item \texttt{arrangement:} String com quem fez o arranjo da obra;
+        \item \texttt{instruments:} Obrigatório, possui os instrumentos. Cada instrumento possui:
+            \begin{itemize}
+                \item \texttt{name:} String obrigatória com o nome do instrumento;
+                \item \texttt{score:} Obrigatória, possui informação sobre a partitura;
+                    \begin{itemize}
+                        \item \texttt{voice:} String com a voz;
+                        \item \texttt{clave:} String com a clave;
+                        \item \texttt{tune:} String com a afinação;
+                        \item \texttt{path:} String obrigatória com o caminho da partitura no ficheiro zip.
+                    \end{itemize}
+            \end{itemize}
+    \end{itemize}
+    
+\paragraph{\textbf{User:}} representa cada utilizador do sistema. Apresenta a seguinte estrutura:
+    \begin{itemize}
+        \item \texttt{name:} String obrigatória com o nome do utilizador;
+        \item \texttt{email:} String obrigatória com o email;
+        \item \texttt{password:} String obrigatória com a password;
+        \item \texttt{type:} String obrigatória que define o tipo de utilizador, ou seja, define o nível de privilégios que o utilizador tem. Tipo 1 (\texttt{Administrador}) tem quase todos os privilégios. Tipo 2 (\texttt{Produtor}), pode introduzir obras, pode apagar(DELETE's)/editar(PUT's)/inserir(POST's)/ver(GET's) instrumentos e tem acesso(GETs) às obras, agenda, noticias e biblioteca de suporte. Tipo 3 (\texttt{Consumidor}) apenas tem acesso(GETs) às obras, agenda, noticias e biblioteca de suporte;
+        \item \texttt{approved:} Boolean obrigatório que permite saber se a conta já foi aprovada pelo administrador
+        \item \texttt{stats:} lista que possui as estatísticas do utilizador;
+            \begin{itemize}
+                \item \texttt{idPiece:} id (String) da obra a que se associa os valores seguintes;
+                \item \texttt{views:} número de visualizações do utilizador dessa obra;
+                \item \texttt{downloads:} número de downloads do utilizador dessa obra.
+            \end{itemize}
+    \end{itemize}
+

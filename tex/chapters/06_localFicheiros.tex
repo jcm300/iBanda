@@ -1,0 +1,9 @@
+\section{Localização dos ficheiros armazenados}\label{c:localFichs}
+
+\qquad Os \textbf{ficheiros da biblioteca de suporte} (PDFs) estão todos na pasta \verb|public/pdfs/| sendo que o nome de cada pdf é o \_id gerado pelo mongoDB para representar o mesmo na base de dados mais a terminação do formato do ficheiro, ou seja \_id.pdf.  
+
+Quanto aos \textbf{ficheiros correspondentes às obras}, são todos guardados na pasta \verb|public/scores/|. Concretamente, cada obra tem uma pasta dedicada, sendo o nome dessa pasta o \_id da obra (ou seja, a localização dos seus ficheiros) com id \_id será \verb|public/scores/_id/|. 
+
+As \textbf{sessões dos utilizadores} são guardadas em \verb|sessions/|. 
+
+Os \textbf{logs do sistema} para além de serem mostrados na consola, são também guardados num ficheiro (\texttt{log.json}) usando o \texttt{morgan}, em que cada pedido é registado num formato \texttt{json}.

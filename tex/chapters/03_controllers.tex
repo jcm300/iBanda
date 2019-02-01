@@ -1,0 +1,47 @@
+\section{Controllers}\label{c:controllers}
+
+Os \texttt{controllers} possuem várias funções que permitem manusear os documentos e seus valores. Tal como mencionado anteriormente, as coleções e respetivos documentos são estruturados por \texttt{Schemas} recorrendo ao \texttt{Mongoose}. E é aqui, nos \texttt{Controllers}, que se encontram definidos a criação, atualização, destruição, listagem e obtenção de estatísticas dos mesmos.
+
+\begin{framed}
+\begin{lstlisting}[language=JavaScript]
+    var Article = require("../models/article")
+    const Articles = module.exports
+
+    Articles.list = () => {
+        return Article
+            .find()
+            .sort({date: -1})
+            .exec()
+    }
+
+    Articles.listVisibles = () => {
+        return Article
+            .find({visible: true})
+            .sort({date: -1})
+            .exec()
+    }
+
+    Articles.getArticle = id => {
+        return Article
+            .findOne({_id: id})
+            .exec()
+    }
+\end{lstlisting}
+\end{framed}
+
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{article.js} \textit{da pasta} \texttt{controllers}.
+\end{center}
+
+\paragraph{Article:} permite a criação (\texttt{createArticle, insertMany}), atualização (\texttt{updateArticle}) e destruição (\texttt{deleteArticle}) de artigos. Para além disso, permite listar todos os artigos (\texttt{list}) ou apenas aqueles que estão visíveis (\texttt{listVisibles}). Permite também obter um único artigo dado o seu id (\texttt{getArticle}), bem como mudar a visibilidade de um artigo dado um id (\texttt{changeVisibility}). Por fim, permite a obtenção de artigos consoante a data (\texttt{getArticlesByDate}), o autor (\texttt{getArticlesByAuthor}) e o tópico (\texttt{getArticlesByTopic}).
+
+\paragraph{Entry:} permite a criação (\texttt{createEntry}), atualização (\texttt{updateEntry}) e destruição (\texttt{deleteEntry}) de entradas na biblioteca de suporte. Para além disso permite listar todos as entradas (\texttt{list}) ou obter uma única entrada dado o seu id (\texttt{getEntry}).
+    
+\paragraph{Event:} permite a criação (\texttt{createEvent, insertMany}), atualização (\texttt{updateEvent}) e destruição (\texttt{delete Event}) de eventos. Para além disso, permite listar todos os eventos (\texttt{list}) ou obter um único evento dado o seu id (\texttt{getEvent}). Por fim, permite a obtenção de eventos consoante o evento se realize numa dada data (\texttt{getEventsByDate}), numa dada hora (\texttt{getEventsByHour}), numa dada data e hora (\texttt{getEventsByDataHour}) ou num dado local (\texttt{getEventsByLocal}).
+
+\paragraph{Piece:} permite a criação (\texttt{createPiece}), atualização (\texttt{updatePiece}) e destruição (\texttt{deletePiece}) na parte da obra armazenada na base de dados. Para além disso, permite listar todas as obras (\texttt{list}) ou obter uma obra dado o seu id (\texttt{getPiece}), e de novo apenas a parte armazenada na base de dados. Para além disso, o \texttt{addInst} permite adicionar um instrumento a uma obra, o \texttt{remInst} permite eliminar um instrumento da obra e o \texttt{updateInst} permite atualizar um instrumento de uma obra.
+    
+\paragraph{User:} permite a criação (\texttt{createUser}), atualização (\texttt{updateUser}) e destruição (\texttt{deleteUser}) de utilizadores. Para além disso permite listar todos os utilizadores (\texttt{list}). Permite também obter um único utilizador dado o seu id (\texttt{getUser}) ou dado o seu email (\texttt{findOne}). Na criação de utilizadores a password é encriptada sendo que existe também uma função por forma a verificar se uma password não encriptada é igual à armazenada (\texttt{isValidPassword}), função importante para o login de utilizadores.  Existem também três funções que permitem manter as estatísticas atualizadas, \texttt{updateViews} para adicionar uma visualização de um artigo, \texttt{updateDownloads} para adicionar um download de um artigo e \texttt{deleteStats} para apagar uma entrada das estatísticas quando a obra é apagada do sistema. Há também o \texttt{approve} que recebe o id da conta e aprova-a, bem como, foi crida a função \texttt{updatePassword} que permite que um utilizador atualize a sua password, onde é necessário providenciar a antiga password e a nova password.
+
+Por fim, há um conjunto de funções que permite a obtenção das estatísticas: \texttt{getViews} que obtém o número de visualizações total para um utilizador, \texttt{getDownloads} que obtém o número de downloads total para um utilizador, \texttt{getPiece} que obtém a obra com mais visualizações por um utilizador, \texttt{getdownload} que obtém a obra com mais downloads por um utilizador, \texttt{getAllViews} que devolve o número de visualizações total, \texttt{getAllDownloads} que devolve o número de downloads total, \texttt{getUsersViews} que obtém uma lista com as visualizações totais de cada utilizador, \texttt{getUsersDownloads} que obtém uma lista com os downloads totais de cada utilizador, \texttt{getUserWithMostViews} que obtém o utilizador com mais visualizações, \texttt{getUserWithMostDownloads} que obtém o utilizador com mais downloads, \texttt{getMostViewed} que devolve a obra com mais visualizações e \texttt{getMostDownloads} que devolve a obra com mais downloads.
+

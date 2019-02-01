@@ -1,0 +1,45 @@
+\section{Instalação}\label{c:instalacao}
+
+Para proceder à instalação do sistema de forma correta, é necessário que a máquina em questão tenha instaladas as seguintes ferramentas: \texttt{Java 8}, \texttt{Gradle}, \texttt{npm} e \texttt{mongoDB}. Após a instalação das dependências referidas, é possível iniciar a instalação, correndo o seguinte conjunto de passos (assumindo que possui todos os ficheiros e que a directoria atual seja a pasta iBanda):
+\begin{lstlisting}[language=sh]
+    $ cd grammars
+    $ gradle generateAgendaParser
+    $ gradle generateNewsParser
+    $ cd ..
+    $ npm install
+\end{lstlisting}
+
+Por fim, para correr o sistema, são ainda necessários os comandos:
+\begin{lstlisting}[language=sh]
+    $ mongod &
+    $ npm start
+\end{lstlisting}
+
+Por forma a automatizar este processo foi criada uma script com 4 modos. No primeiro, (\verb|./install.sh p|), é feito o clone do repositório, esperado que o user mude o \textit{url} em     \texttt{app.js} (bem como a porta em \verb|bin/www|), a chave privada, a chave pública e, opcionalmente, a password do \textit{admin} (\texttt{root@root}), correndo no fim os passos anteriormente enunciados. No segundo, \verb|./install.sh i|, são realizados os passos anteriormente enunciados, sem realizar clone, e sem esperar pelo utilizador. Os últimos dois modos criam a pasta \verb|~/Downloads/mongoDB| de modo a correr o mongoDB da forma \verb|mongod --dbpath ~/Downloads/mongoDB|, no qual as BDs são guardadas nessa pasta e estes dois modos servem mais para testes. Com \verb|./install t|, compila-se as gramáticas (gradle) e começa o mongoDB e o sistema sem fazer a instalação de packages npm dos quais o sistema depende. Por fim, o \verb|./install r| apenas corre o mongoDB e o sistema.
+
+\begin{framed}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+
+if [ $# -eq 1 ]; then
+    if [ $1 = "i" ]; then
+        #start mongoDB
+        mongod &
+
+        #generate grammars
+        cd grammars
+        gradle generateAgendaParser
+        gradle generateNewsParser
+
+        #Install packages dependencies
+        cd ..
+        npm install
+
+        #Start
+        npm start
+\end{lstlisting}
+\end{framed}
+
+\begin{center}
+\textit{Excerto do ficheiro} \texttt{install.sh} \textit{da pasta} \texttt{iBanda} \textit{que possui os vários modos de instalação.}
+\end{center}
