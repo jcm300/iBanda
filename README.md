@@ -1,5 +1,8 @@
 # iBanda
+
 Musical Digital Archive in Node.js and MongoDB
+
+For more information you can have a look [here (PT version only)](tex).
 
 # Dependencies
 - git (only to clone rep)
